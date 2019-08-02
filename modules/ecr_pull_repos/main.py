@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import boto3, docker, base64, json
 
 #   TODO: Implement a better error handling
