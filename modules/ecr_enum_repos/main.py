@@ -44,7 +44,7 @@ def get_ecr_repos(ecr_client):
     return data
 
 
-def get_ecr_repos_image_tags(ecr_client, repository_name, tag_status):
+def get_ecr_repo_image_tags(ecr_client, repository_name, tag_status):
     data = None
 
     try:
@@ -61,9 +61,10 @@ def get_ecr_repos_image_tags(ecr_client, repository_name, tag_status):
 
     return data
 
+
 def append_image_tags_to_repo(ecr_client, ecr_repos):
     for repo in ecr_repos:
-        image_ids = get_ecr_repos_image_tags(ecr_client, repo['repositoryName'], 'ANY')
+        image_ids = get_ecr_repo_image_tags(ecr_client, repo['repositoryName'], 'ANY')
         if image_ids is not None:
             repo.update({'image_ids': image_ids})
 
@@ -102,7 +103,7 @@ def main(args):
     }
 
     enum_repos(args.get('profile'), data)
-    
+
     print('Result:')
     print(json.dumps(data, indent=4, default=str)) 
     return data
