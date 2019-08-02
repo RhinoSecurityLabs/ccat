@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import boto3, docker, base64, json
 
+#   TODO: Accept command line args
 #   TODO: Implement a better error handling
 #   TODO: Pull multiple repos with different tags
 
