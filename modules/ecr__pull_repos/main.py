@@ -6,7 +6,7 @@ import boto3, docker, base64, json
 #   TODO: Pull multiple repos with different tags
 
 module_info = {
-    'name': 'ecr_pull_repos',
+    'name': 'ecr__pull_repos',
     'author': 'Jack Ganbold of Rhino Security Labs',
     'category': 'Container',
     'one_liner': 'Does this thing.',
