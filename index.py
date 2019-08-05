@@ -7,6 +7,7 @@ from PyInquirer import (prompt, Separator)
 
 
 import modules.ecr__enum_repos.main as ecr__enum_repos
+import modules.ecr__pull_repos.main as ecr__pull_repos
 
 
 ENUMRATE_ECR = 'Enumrate ECR'
@@ -118,6 +119,52 @@ def ask_ecr_enum_repos_input():
     return answers
 
 
+def ask_ecr_pull_repos_input():
+    questions = [
+        {
+            'type': 'input',
+            'name': 'aws_cli_profile',
+            'message': 'Enter AWS profile name'
+        },
+        {
+            'type': 'input',
+            'name': 'aws_region',
+            'message': 'Enter AWS region name'
+        },
+        {
+            'type': 'input',
+            'name': 'aws_ecr_repository_uri',
+            'message': 'Enter AWS ECR repository URI'
+        },
+        {
+            'type': 'input',
+            'name': 'aws_ecr_repository_tags',
+            'message': 'Enter AWS ECR repository tags seperate by comma'
+        },
+    ]
+
+    answers = prompt(questions)
+
+    # strip(',') remove leading or trailing (,)
+    # replace(' ', '') remove spaces
+    # split by comma to generate a list of tags
+    answers['aws_ecr_repository_tags'] = answers['aws_ecr_repository_tags'].strip(',').replace(' ', '').split(',')
+
+    return answers
+
+
+def print_summary(data, module):
+    if data is not None:
+        summary = module.summary(data)
+        if len(summary) > 1000:
+            raise ValueError('The {} module\'s summary is too long ({} characters). Reduce it to 1000 characters or fewer.'.format(module.module_info['name'], len(summary)))
+        if not isinstance(summary, str):
+            raise TypeError(' The {} module\'s summary is {}-type instead of str. Make summary return a string.'.format(module.module_info['name'], type(summary)))
+        
+        print('{} completed.\n'.format(module.module_info['name']))
+        print('MODULE SUMMARY:\n\n{}\n'.format(summary.strip('\n')))  
+
+
 def exit_cli():
     print(figlet_format('Bye Bye', font='slant'))
     sys.exit()
@@ -126,9 +173,12 @@ def exit_cli():
 def run_module(answers):
     if ENUMRATE_ECR in answers['main_menu']:
         cli_answers = ask_ecr_enum_repos_input()
-        ecr__enum_repos.main(cli_answers)
+        data = ecr__enum_repos.main(cli_answers)
+        print_summary(data, ecr__enum_repos)
     elif PULL_ECR_REPOSE in answers['main_menu']:
-        pass
+        cli_answers = ask_ecr_pull_repos_input()
+        data = ecr__pull_repos.main(cli_answers)
+        print_summary(data, ecr__pull_repos)
     elif PUSH_ECR_REPOS in answers['main_menu']:
         pass
     elif DOCKER_BACKDOOR in answers['main_menu']:
