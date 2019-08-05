@@ -8,6 +8,7 @@ from PyInquirer import (prompt, Separator)
 
 import modules.ecr__enum_repos.main as ecr__enum_repos
 import modules.ecr__pull_repos.main as ecr__pull_repos
+import modules.docker__backdoor_reverse_shell.main as docker__backdoor
 
 
 ENUMRATE_ECR = 'Enumrate ECR'
@@ -153,6 +154,34 @@ def ask_ecr_pull_repos_input():
     return answers
 
 
+def ask_docker_backdoor_input():
+    questions = [
+        {
+            'type': 'input',
+            'name': 'repository_uri',
+            'message': 'Enter Docker image name'
+        },
+        {
+            'type': 'input',
+            'name': 'target_image_tag',
+            'message': 'Enter Docker image tag'
+        },
+        {
+            'type': 'input',
+            'name': 'build_image_tag',
+            'message': 'Enter Docker image new build tag'
+        },
+        {
+            'type': 'input',
+            'name': 'injection',
+            'message': 'Enter Docker injection'
+        }
+    ]
+
+    answers = prompt(questions)
+
+    return answers
+
 def print_summary(data, module):
     if data is not None:
         summary = module.summary(data)
@@ -175,14 +204,20 @@ def run_module(answers):
         cli_answers = ask_ecr_enum_repos_input()
         data = ecr__enum_repos.main(cli_answers)
         print_summary(data, ecr__enum_repos)
+
     elif PULL_ECR_REPOSE in answers['main_menu']:
         cli_answers = ask_ecr_pull_repos_input()
         data = ecr__pull_repos.main(cli_answers)
         print_summary(data, ecr__pull_repos)
+
     elif PUSH_ECR_REPOS in answers['main_menu']:
         pass
+
     elif DOCKER_BACKDOOR in answers['main_menu']:
-        pass
+        cli_answers = ask_docker_backdoor_input()
+        data = docker__backdoor.main(cli_answers)
+        print_summary(data, docker__backdoor)
+        
     else:
         exit_cli()
 
