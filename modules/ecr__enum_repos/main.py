@@ -72,9 +72,9 @@ def append_image_tags_to_repo(ecr_client, ecr_repos):
             repo.update({'image_ids': image_ids})
 
 
-def enum_repos(profile, data):
+def enum_repos(profile, regions, data):
     sum = 0
-    regions = get_all_aws_regions()
+    # regions = get_all_aws_regions()
 
     for region in regions:
         aws_session = get_aws_session(profile, region)
@@ -100,12 +100,12 @@ def main(args):
     data  = {
         'count': 0,
         'payload': {
-            'regions':[],
+            'regions': [],
             'repositories_by_region': {}
         }
     }
 
-    enum_repos(args.get('profile'), data)
+    enum_repos(args.get('aws_cli_profile'), args.get('aws_regions'), data)
 
     print('Result:')
     print(json.dumps(data, indent=4, default=str)) 
@@ -122,7 +122,10 @@ def summary(data):
 
 if __name__ == "__main__":
     print('Running module {}...'.format(module_info['name']))
-    args = {'profile': 'cloudgoat'}
+    args = {
+        'aws_cli_profile': 'cloudgoat',
+        'aws_regions': ['us-east-1']
+    }
     data = main(args) 
 
     if data is not None:
