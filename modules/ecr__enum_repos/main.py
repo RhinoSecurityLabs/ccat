@@ -19,15 +19,6 @@ module_info = {
 }
 
 
-def get_all_aws_regions():
-    return [
-        'us-east-1','us-east-2','us-west-1','us-west-2','ap-east-1',
-        'ap-south-1','ap-northeast-3','ap-northeast-2','ap-southeast-1',
-        'ap-southeast-2','ap-northeast-1','ca-central-1','cn-north-1',
-        'cn-northwest-1','eu-central-1','eu-west-1','eu-west-2','eu-west-3',
-        'eu-north-1','me-south-1','sa-east-1','us-gov-east-1','us-gov-west-1'
-    ]
-
 def get_aws_session(profile, region):
     return boto3.session.Session(profile_name=profile, region_name=region)
 
@@ -74,7 +65,6 @@ def append_image_tags_to_repo(ecr_client, ecr_repos):
 
 def enum_repos(profile, regions, data):
     sum = 0
-    # regions = get_all_aws_regions()
 
     for region in regions:
         aws_session = get_aws_session(profile, region)
