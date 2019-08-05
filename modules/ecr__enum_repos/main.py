@@ -86,6 +86,7 @@ def enum_repos(profile, regions, data):
 
     data['count'] = sum
 
+
 def main(args):
     data  = {
         'count': 0,
@@ -97,8 +98,6 @@ def main(args):
 
     enum_repos(args.get('aws_cli_profile'), args.get('aws_regions'), data)
 
-    print('Result:')
-    print(json.dumps(data, indent=4, default=str)) 
     return data
 
 
@@ -125,5 +124,8 @@ if __name__ == "__main__":
         if not isinstance(summary, str):
             raise TypeError(' The {} module\'s summary is {}-type instead of str. Make summary return a string.'.format(module_info['name'], type(summary)))
         
+        print('RESULT:')
+        print(json.dumps(data, indent=4, default=str))         
+
         print('{} completed.\n'.format(module_info['name']))
         print('MODULE SUMMARY:\n\n{}\n'.format(summary.strip('\n')))       
