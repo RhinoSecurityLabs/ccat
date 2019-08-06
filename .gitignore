@@ -33,3 +33,4 @@ tmp/**
 .vs/
 test-results.xml
 !build/
+/data
