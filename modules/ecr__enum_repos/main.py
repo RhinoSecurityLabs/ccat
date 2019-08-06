@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+import os
 import boto3
 import json
 
 
 #   TODO: Accept command line args
+
+SAVE_TO_FILE_DIRECTORY = './data'
+SAVE_TO_FILE_PATH = '{}/ecr__enum_repos_data.json'.format(SAVE_TO_FILE_DIRECTORY)
 
 
 module_info = {
@@ -16,6 +20,7 @@ module_info = {
     'prerequisite_modules': [],
     'external_dependencies': [],
     'arguments_to_autocomplete': [],
+    'data_saved': SAVE_TO_FILE_PATH
 }
 
 
@@ -64,7 +69,8 @@ def append_image_tags_to_repo(ecr_client, ecr_repos):
 
 
 def save_to_file(data):
-    with open('ec2__enum_repos_data.json', 'w+') as json_file:
+    os.makedirs(SAVE_TO_FILE_DIRECTORY, exist_ok=True)
+    with open(SAVE_TO_FILE_PATH, 'w+') as json_file:
         json.dump(data, json_file, indent=4, default=str)  
 
 
@@ -110,7 +116,7 @@ def main(args):
 def summary(data):
     out = ''
     out += 'Total {} ECR Repositories Enumrated\n'.format(data['count'])
-    out += 'ECR recources saved in memory databse.\n'
+    out += 'ECR recources saved under {}.\n'.format(module_info['data_saved'])
 
     return out
 
