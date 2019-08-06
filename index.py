@@ -2,6 +2,7 @@ import json
 import sys
 
 
+import boto3
 from pyfiglet import figlet_format
 from PyInquirer import (prompt, Separator)
 
@@ -23,7 +24,19 @@ def title(text='Rhino Container Hack CLI', font='slant'):
     print(figlet_format(text, font=font))
 
 
+def generate_menu_choices_aws_regions(aws_regions=[]):
+    choices = []
+    for region in aws_regions:
+        choices.append({
+            'name': region
+        })
+
+    return choices
+
+
 def ask_ecr_enum_repos_input():
+    aws_regions = get_all_aws_regions()
+
     questions= [
         {
             'type': 'input',
@@ -34,82 +47,7 @@ def ask_ecr_enum_repos_input():
             'type': 'checkbox',
             'name': 'aws_regions',
             'message': 'Select AWS regions',
-            'choices': [
-                Separator('= Select ALL ='),
-                {
-                    'name': AWS_REGIONS_ALL
-                },
-                Separator('= United States ='),
-                {
-                    'name': 'us-east-1'
-                },
-                {
-                    'name': 'us-east-2'
-                },
-                {
-                    'name': 'us-west-1'
-                },
-                {
-                    'name': 'us-west-2'
-                },
-                Separator('= Asia Pacific ='),
-                {
-                    'name': 'ap-east-1'
-                },
-                {
-                    'name': 'ap-south-1'
-                },
-                {
-                    'name': 'ap-northeast-1'
-                },
-                {
-                    'name': 'ap-northeast-2'
-                },
-                {
-                    'name': 'ap-southeast-1'
-                },
-                {
-                    'name': 'ap-southeast-2'
-                },
-                Separator('= China ='),
-                {
-                    'name': 'cn-north-1'
-                },
-                {
-                    'name': 'cn-northwest-1'
-                },
-                Separator('= European Union ='),
-                {
-                    'name': 'eu-central-1'
-                },
-                {
-                    'name': 'eu-west-1'
-                },
-                {
-                    'name': 'eu-west-2'
-                },
-                {
-                    'name': 'eu-west-3'
-                },
-                {
-                    'name': 'eu-north-1'
-                },
-                Separator('= Middle East ='),
-                {
-                    'name': 'me-south-1'
-                },
-                Separator('= South America ='),
-                {
-                    'name': 'sa-east-1'
-                },
-                Separator('= AWS GovCloud ='),
-                {
-                    'name': 'us-gov-east-1'
-                },
-                {
-                    'name': 'us-gov-west-1'
-                }
-            ]
+            'choices': generate_menu_choices_aws_regions(aws_regions)
         }
     ]
 
@@ -183,6 +121,7 @@ def ask_docker_backdoor_input():
 
     return answers
 
+
 def ask_ecr_push_repos_input():
     questions = [
         {
@@ -210,6 +149,7 @@ def ask_ecr_push_repos_input():
     answers = prompt(questions)
 
     return answers
+
 
 def print_summary(data, module):
     if data is not None:
@@ -254,13 +194,17 @@ def run_module(answers):
 
 
 def get_all_aws_regions():
-    return [
-        'us-east-1','us-east-2','us-west-1','us-west-2','ap-east-1',
-        'ap-south-1','ap-northeast-3','ap-northeast-2','ap-southeast-1',
-        'ap-southeast-2','ap-northeast-1','ca-central-1','cn-north-1',
-        'cn-northwest-1','eu-central-1','eu-west-1','eu-west-2','eu-west-3',
-        'eu-north-1','me-south-1','sa-east-1','us-gov-east-1','us-gov-west-1'
-    ]
+    aws_session = boto3.Session()
+    regions = aws_session.get_available_regions('ec2')
+
+    return regions
+    # return [
+    #     'us-east-1','us-east-2','us-west-1','us-west-2','ap-east-1',
+    #     'ap-south-1','ap-northeast-3','ap-northeast-2','ap-southeast-1',
+    #     'ap-southeast-2','ap-northeast-1','ca-central-1','cn-north-1',
+    #     'cn-northwest-1','eu-central-1','eu-west-1','eu-west-2','eu-west-3',
+    #     'eu-north-1','me-south-1','sa-east-1','us-gov-east-1','us-gov-west-1'
+    # ]
 
 
 def main_menu():
@@ -295,3 +239,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
