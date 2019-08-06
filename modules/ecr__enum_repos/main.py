@@ -63,16 +63,21 @@ def append_image_tags_to_repo(ecr_client, ecr_repos):
             repo.update({'image_ids': image_ids})
 
 
-def enum_repos(profile, regions, data):
+def save_to_file(data):
+    with open('ec2__enum_repos_data.json', 'w+') as json_file:
+        json.dump(data, json_file, indent=4, default=str)  
+
+
+def enum_repos(profile, aws_regions, data):
     sum = 0
 
-    for region in regions:
+    for region in aws_regions:
         aws_session = get_aws_session(profile, region)
         ecr_client = aws_session.client('ecr')
         ecr_repos = get_ecr_repos(ecr_client)
 
         if ecr_repos is not None:
-            data['payload']['regions'].append(region)
+            data['payload']['aws_regions'].append(region)
             data['payload']['repositories_by_region'].update({
                 region: ecr_repos
             })
@@ -91,12 +96,13 @@ def main(args):
     data  = {
         'count': 0,
         'payload': {
-            'regions': [],
+            'aws_regions': [],
             'repositories_by_region': {}
         }
     }
 
     enum_repos(args.get('aws_cli_profile'), args.get('aws_regions'), data)
+    save_to_file(data)
 
     return data
 
