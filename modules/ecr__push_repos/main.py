@@ -18,8 +18,8 @@ module_info = {
 }
 
 
-def get_aws_session(profile, region):
-    return boto3.session.Session(profile_name=profile, region_name=region)
+def get_aws_session(aws_cli_profile, aws_region):
+    return boto3.session.Session(profile_name=aws_cli_profile, region_name=aws_region)
 
 
 def docker_login(docker_client, username, password, registry):
@@ -33,8 +33,8 @@ def get_docker_username_password_registery(token):
     return (docker_username, docker_password, docker_registry)
 
 
-def docker_push(docker_client, image, tag):
-    for line in docker_client.images.push(image, tag=tag, stream=True, decode=True):
+def docker_push(docker_client, image, aws_ecr_repository_tag):
+    for line in docker_client.images.push(image, tag=aws_ecr_repository_tag, stream=True, decode=True):
         print(line)
         if DOCKER_PUSH_ERROR in line:
             return False
@@ -47,7 +47,7 @@ def main(args):
         'payload': {}
     }
 
-    aws_session = get_aws_session(args['profile'], args['region'])
+    aws_session = get_aws_session(args['aws_cli_profile'], args['aws_region'])
     ecr_client = aws_session.client('ecr')
     docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
@@ -56,13 +56,13 @@ def main(args):
     docker_login_response = docker_login(docker_client,docker_username, docker_password, docker_registry)
     
     if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'): 
-        docker_push_response = docker_push(docker_client, args['repository_uri'],args['tag'])
+        docker_push_response = docker_push(docker_client, args['aws_ecr_repository_uri'],args['aws_ecr_repository_tag'])
         if docker_push_response:
             data['count'] = 1
             data['payload'].update({
-                'region': args['region'],
-                'repository_uri': args['repository_uri'],
-                'tag': args['tag']
+                'aws_region': args['aws_region'],
+                'aws_ecr_repository_uri': args['aws_ecr_repository_uri'],
+                'aws_ecr_repository_tag': args['aws_ecr_repository_tag']
             })
         else:
             data['count'] = 0
@@ -79,10 +79,10 @@ def summary(data):
 if __name__ == "__main__":
     print('Running module {}...'.format(module_info['name']))
     args = {
-        'profile': 'cloudgoat',
-        'region': 'us-east-1',
-        'repository_uri': '216825089941.dkr.ecr.us-east-1.amazonaws.com/pacu',
-        'tag': 'latest'
+        'aws_cli_profile': 'cloudgoat',
+        'aws_region': 'us-east-1',
+        'aws_ecr_repository_uri': '216825089941.dkr.ecr.us-east-1.amazonaws.com/pacu',
+        'aws_ecr_repository_tag': 'latest'
     }
 
     data = main(args)
