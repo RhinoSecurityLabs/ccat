@@ -9,6 +9,7 @@ from PyInquirer import (prompt, Separator)
 import modules.ecr__enum_repos.main as ecr__enum_repos
 import modules.ecr__pull_repos.main as ecr__pull_repos
 import modules.docker__backdoor_reverse_shell.main as docker__backdoor
+import modules.ecr__push_repos.main as ecr__push_repos
 
 
 ENUMRATE_ECR = 'Enumrate ECR'
@@ -182,6 +183,34 @@ def ask_docker_backdoor_input():
 
     return answers
 
+def ask_ecr_push_repos_input():
+    questions = [
+        {
+            'type': 'input',
+            'name': 'aws_cli_profile',
+            'message': 'Enter AWS profile name'
+        },
+        {
+            'type': 'input',
+            'name': 'aws_region',
+            'message': 'Enter AWS region name'
+        },
+        {
+            'type': 'input',
+            'name': 'aws_ecr_repository_uri',
+            'message': 'Enter Docker image that named after AWS ECR repository URI'
+        },
+        {
+            'type': 'input',
+            'name': 'aws_ecr_repository_tag',
+            'message': 'Enter Docker image tag'
+        }
+    ]
+
+    answers = prompt(questions)
+
+    return answers
+
 def print_summary(data, module):
     if data is not None:
         summary = module.summary(data)
@@ -211,13 +240,15 @@ def run_module(answers):
         print_summary(data, ecr__pull_repos)
 
     elif PUSH_ECR_REPOS in answers['main_menu']:
-        pass
+        cli_answers = ask_ecr_push_repos_input()
+        data = ecr__push_repos.main(cli_answers)
+        print_summary(data, ecr__push_repos)
 
     elif DOCKER_BACKDOOR in answers['main_menu']:
         cli_answers = ask_docker_backdoor_input()
         data = docker__backdoor.main(cli_answers)
         print_summary(data, docker__backdoor)
-        
+
     else:
         exit_cli()
 
@@ -243,14 +274,8 @@ def main_menu():
                 ENUMRATE_ECR,
                 PULL_ECR_REPOSE,
                 PUSH_ECR_REPOS,
-                Separator('= AZURE ='),
-                Separator('Coming Soon'),
-                Separator('= GCP ='),
-                Separator('Coming Soon='),
                 Separator('= Docker ='),
                 DOCKER_BACKDOOR,
-                Separator('= Kubernets ='),
-                Separator('Coming Soon'),
                 Separator('= Exit CLI ='),
                 'Exit'
             ]
@@ -263,8 +288,9 @@ def main_menu():
 
 def main():
     title()
-    main_menu_answers = main_menu()
-    run_module(main_menu_answers)
+    while True:
+        main_menu_answers = main_menu()
+        run_module(main_menu_answers)   
 
 
 if __name__ == "__main__":
