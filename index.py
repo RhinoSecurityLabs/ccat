@@ -42,7 +42,7 @@ class CLI(object):
             for extention in self.extentions.values():
                 menu_choices += extention.get_menu()
 
-            menu_choices += self.get_helpter_menu()
+            menu_choices += self.get_helper_menu()
 
         questions = [
             {
@@ -99,7 +99,7 @@ class CLI(object):
         else:
             self.exit_cli()
 
-    def get_helpter_menu(self):
+    def get_helper_menu(self):
         return [
             Separator('= Exit CLI ='),
             'Exit'
