@@ -1,5 +1,5 @@
 # Rhino Container Hack CLI
-_Rhino Container Hack CLI is a tool for testing security of container environments.
+_Rhino Container Hack CLI is a tool for testing security of container environments._
 
 ## Installation
 
