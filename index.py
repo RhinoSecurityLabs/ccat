@@ -3,9 +3,10 @@ import json
 import sys
 
 
-#   TODO: confirm to use current profile or maybe just show the current profile name
 #   TODO: Fix minor bugs
 #   TODO: Add README.md
+#   TODO: Create a Dockerfile file
+#   TODO: Create a DockerCompose file
 
 
 import boto3
@@ -41,13 +42,12 @@ class CLI(object):
     def print_title(self, text='Rhino\'s Docker Hacking CLI', font='slant'):
         print(figlet_format(text, font=font))
 
-    def main_menu(self, menu_choices=[]):
+    def main_menu(self):
+        menu_choices=[]
+        for extention in self.extentions.values():
+            menu_choices += extention.get_menu()
 
-        if not menu_choices:
-            for extention in self.extentions.values():
-                menu_choices += extention.get_menu()
-
-            menu_choices += self.get_helper_menu()
+        menu_choices += self.get_helper_menu()
 
         questions = [
             {
@@ -150,7 +150,7 @@ class AWS(object):
 
     def get_menu(self):
         return [
-            Separator('= AWS ='),
+            Separator('= AWS ({} | {}) ='.format(self.configuration['profile'], self.configuration['region'])),
             ENUMRATE_ECR,
             PULL_ECR_REPOSE,
             PUSH_ECR_REPOS
