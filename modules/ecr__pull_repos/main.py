@@ -41,31 +41,33 @@ def docker_pull(docker_client, repo):
     return docker_pull_response
 
 def ecr_pull(args, data):
-    aws_session = get_aws_session(args['aws_cli_profile'], args['aws_region'])
-    ecr_client = aws_session.client('ecr')
-    token = ecr_client.get_authorization_token()
+    try:
+        aws_session = get_aws_session(args['aws_cli_profile'], args['aws_region'])
+        ecr_client = aws_session.client('ecr')
+        token = ecr_client.get_authorization_token()
 
-    docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
-    docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
-    docker_login_response = docker_login(docker_client, docker_username, docker_password, docker_registry)
+        docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+        docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
+        docker_login_response = docker_login(docker_client, docker_username, docker_password, docker_registry)
 
-    if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
-        count = 0
-        for tag in args['aws_ecr_repository_tags']:
-            repo_tag = args['aws_ecr_repository_uri'] + ":" + tag
-            try:
-                docker_pull_response = docker_pull(docker_client, repo_tag)
-                out = 'Pulled {}'.format(docker_pull_response)
-                count += 1
-                data['payload']['aws_ecr_repository_tags'].append(tag)
-                print(out)
-            except Exception as e:
-                print(e)
+        if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
+            count = 0
+            for tag in args['aws_ecr_repository_tags']:
+                repo_tag = args['aws_ecr_repository_uri'] + ":" + tag
+                try:
+                    docker_pull_response = docker_pull(docker_client, repo_tag)
+                    out = 'Pulled {}'.format(docker_pull_response)
+                    count += 1
+                    data['payload']['aws_ecr_repository_tags'].append(tag)
+                    print(out)
+                except Exception as e:
+                    print(e)
 
-        data['count'] = count
-        data['payload']['aws_ecr_repository_uri'] = args['aws_ecr_repository_uri']
-        data['payload']['aws_region'] = args['aws_region'] 
-        
+            data['count'] = count
+            data['payload']['aws_ecr_repository_uri'] = args['aws_ecr_repository_uri']
+            data['payload']['aws_region'] = args['aws_region'] 
+    except Exception as e:
+        print(e)
 
 def main(args):
     data  = {
