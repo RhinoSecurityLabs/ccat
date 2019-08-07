@@ -12,6 +12,11 @@ To install Rhino Container Hack CLI from source
   $ python3 main.py
 ```
 
+Or run with Dcoker
+```
+  $ docker run -it --rm -v ~/.aws:/root/.aws/ -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/app/ rhinosecuritylabs/container-hack:latest
+```
+
 ## Basic Usage
 
 ## Disclaimer
