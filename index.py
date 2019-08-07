@@ -3,7 +3,6 @@ import json
 import sys
 
 
-#   TODO: Fix minor bugs
 #   TODO: Add README.md
 #   TODO: Create a Dockerfile file
 #   TODO: Create a DockerCompose file
@@ -282,12 +281,12 @@ class Docker(object):
             {
                 'type': 'input',
                 'name': 'repository_uri',
-                'message': 'Enter Docker image name'
+                'message': 'Enter Docker source image name without tag'
             },
             {
                 'type': 'input',
                 'name': 'target_image_tag',
-                'message': 'Enter Docker image tag'
+                'message': 'Enter Docker source image tag'
             },
             {
                 'type': 'input',
@@ -297,7 +296,7 @@ class Docker(object):
             {
                 'type': 'input',
                 'name': 'injection',
-                'message': 'Enter Docker injection'
+                'message': 'Enter Dockerfile instructions as injection\n  Example:\n      RUN echo \'Happy Hacking\' > hack.txt\n  Enter Instructions'
             }
         ]
 
