@@ -9,7 +9,7 @@ To install Rhino Container Hack CLI from source
   $ git clone https://github.com/RhinoSecurityLabs/container-hack.git
   $ cd container-hack
   $ python3 setup.py install
-  $ python3 container_hack.py
+  $ python3 main.py
 ```
 
 ## Basic Usage
