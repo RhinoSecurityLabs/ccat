@@ -77,23 +77,27 @@ def save_to_file(data):
 def enum_repos(profile, aws_regions, data):
     sum = 0
 
-    for region in aws_regions:
-        aws_session = get_aws_session(profile, region)
-        ecr_client = aws_session.client('ecr')
-        ecr_repos = get_ecr_repos(ecr_client)
+    try:
+        for region in aws_regions:
+            aws_session = get_aws_session(profile, region)
+            ecr_client = aws_session.client('ecr')
+            ecr_repos = get_ecr_repos(ecr_client)
 
-        if ecr_repos is not None:
-            data['payload']['aws_regions'].append(region)
-            data['payload']['repositories_by_region'].update({
-                region: ecr_repos
-            })
+            if ecr_repos is not None:
+                data['payload']['aws_regions'].append(region)
+                data['payload']['repositories_by_region'].update({
+                    region: ecr_repos
+                })
 
-            append_image_tags_to_repo(ecr_client, ecr_repos)
+                append_image_tags_to_repo(ecr_client, ecr_repos)
 
-            count = len(ecr_repos)
-            out = "Found {} repositories in {}".format(count, region)
-            print(out)
-            sum += count
+                count = len(ecr_repos)
+                out = "Found {} repositories in {}".format(count, region)
+                print(out)
+                sum += count
+                
+    except Exception as e:
+        print(e)
 
     data['count'] = sum
 
