@@ -46,26 +46,28 @@ def main(args):
         'count': 0,
         'payload': {}
     }
+    try:
+        aws_session = get_aws_session(args['aws_cli_profile'], args['aws_region'])
+        ecr_client = aws_session.client('ecr')
+        docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
-    aws_session = get_aws_session(args['aws_cli_profile'], args['aws_region'])
-    ecr_client = aws_session.client('ecr')
-    docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
-
-    token = ecr_client.get_authorization_token()
-    docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
-    docker_login_response = docker_login(docker_client,docker_username, docker_password, docker_registry)
-    
-    if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'): 
-        docker_push_response = docker_push(docker_client, args['aws_ecr_repository_uri'],args['aws_ecr_repository_tag'])
-        if docker_push_response:
-            data['count'] = 1
-            data['payload'].update({
-                'aws_region': args['aws_region'],
-                'aws_ecr_repository_uri': args['aws_ecr_repository_uri'],
-                'aws_ecr_repository_tag': args['aws_ecr_repository_tag']
-            })
-        else:
-            data['count'] = 0
+        token = ecr_client.get_authorization_token()
+        docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
+        docker_login_response = docker_login(docker_client,docker_username, docker_password, docker_registry)
+        
+        if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'): 
+            docker_push_response = docker_push(docker_client, args['aws_ecr_repository_uri'],args['aws_ecr_repository_tag'])
+            if docker_push_response:
+                data['count'] = 1
+                data['payload'].update({
+                    'aws_region': args['aws_region'],
+                    'aws_ecr_repository_uri': args['aws_ecr_repository_uri'],
+                    'aws_ecr_repository_tag': args['aws_ecr_repository_tag']
+                })
+            else:
+                data['count'] = 0
+    except Exception as e:
+        print(e)
     
     return data
 
