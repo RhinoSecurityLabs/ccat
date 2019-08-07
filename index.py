@@ -1,6 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import json
 import sys
+
+
+#   TODO: confirm to use current profile or maybe just show the current profile name
+#   TODO: Fix minor bugs
+#   TODO: Add README.md
 
 
 import boto3
@@ -23,7 +28,7 @@ DOCKER_BACKDOOR = 'Docker Backdoor'
 
 class CLI(object):
     def __init__(self):
-        aws = AWS(profile='cloudgoat')
+        aws = AWS()
         docker = Docker()
 
         print(aws.get_menu())
@@ -106,13 +111,24 @@ class CLI(object):
         ]
 
     def exit_cli(self):
-        print(figlet_format('Bye Bye', font='slant'))
-        sys.exit()
+        questions = [
+            {
+                'type': 'confirm',
+                'message': 'Do you want to exit?',
+                'name': 'exit',
+                'default': False,
+            }
+        ]
+
+        answers = prompt(questions)
+        if answers['exit']:
+            print(figlet_format('Bye Bye', font='slant'))
+            sys.exit()
 
 
 class AWS(object):
-    def __init__(self, profile, region='us-east-1'):
-        self.configure = {
+    def __init__(self, profile=None, region=None):
+        self.configuration = {
             'profile': profile,
             'region': region
         }
@@ -141,38 +157,30 @@ class AWS(object):
         ]
 
     def ask_ecr_enum_repos(self):
+        if self.is_configured() is False:
+            self.set_configuration()
+
         aws_regions = self.get_available_regions()
 
         questions= [
             {
-                'type': 'input',
-                'name': 'aws_cli_profile',
-                'message': 'Enter AWS profile name'
-            },
-            {
                 'type': 'checkbox',
                 'name': 'aws_regions',
-                'message': 'Select AWS regions',
+                'message': 'Select AWS regions to enumrate',
                 'choices': self.get_menu_choices_regions(aws_regions)
             }
         ]
 
         answers = prompt(questions)
-        
+        self.append_configuration(answers)
+
         return answers
 
     def ask_ecr_pull_repos(self):
+        if self.is_configured() is False:
+            self.set_configuration()
+
         questions = [
-            {
-                'type': 'input',
-                'name': 'aws_cli_profile',
-                'message': 'Enter AWS profile name'
-            },
-            {
-                'type': 'input',
-                'name': 'aws_region',
-                'message': 'Enter AWS region name'
-            },
             {
                 'type': 'input',
                 'name': 'aws_ecr_repository_uri',
@@ -191,21 +199,15 @@ class AWS(object):
         # replace(' ', '') remove spaces
         # split by comma to generate a list of tags
         answers['aws_ecr_repository_tags'] = answers['aws_ecr_repository_tags'].strip(',').replace(' ', '').split(',')
+        self.append_configuration(answers)
 
         return answers
 
     def ask_ecr_push_repos(self):
+        if self.is_configured() is False:
+            self.set_configuration()
+
         questions = [
-            {
-                'type': 'input',
-                'name': 'aws_cli_profile',
-                'message': 'Enter AWS profile name'
-            },
-            {
-                'type': 'input',
-                'name': 'aws_region',
-                'message': 'Enter AWS region name'
-            },
             {
                 'type': 'input',
                 'name': 'aws_ecr_repository_uri',
@@ -219,8 +221,54 @@ class AWS(object):
         ]
 
         answers = prompt(questions)
+        self.append_configuration(answers)
 
         return answers
+
+    def ask_configuration(self):
+        print('Did not find AWS configuration!')
+        questions = [
+            {
+                'type': 'input',
+                'name': 'aws_cli_profile',
+                'message': 'Enter AWS profile name',
+                'validate': lambda profile: len(profile) != 0 or 'AWS profile name can not be empty!'
+            },
+            {
+                'type': 'input',
+                'name': 'aws_region',
+                'message': 'Enter AWS region name',
+                'validate': lambda region: len(region) != 0 or 'AWS region can not be empty!'
+            }
+        ]
+
+        answers = prompt(questions)
+
+        return answers
+
+    def set_configuration(self):
+        answers = self.ask_configuration()
+
+        print('Configuring AWS...')    
+        self.configuration.update({
+            'profile': answers['aws_cli_profile'],
+            'region': answers['aws_region']
+        })
+
+        print('Successfully configured AWS\n')
+
+    def is_configured(self):
+        return self.configuration['profile'] is not None and self.configuration['region'] is not None
+
+    def print_configuration(self):
+        print(json.dumps(self.configuration, indent=4, default=str))
+
+    def append_configuration(self, answers):
+        answers.update({
+            'aws_cli_profile': self.configuration['profile'],
+            'aws_region': self.configuration['region']
+        })
+
 
 class Docker(object):
     def get_menu(self):
