@@ -31,8 +31,6 @@ class CLI(object):
         aws = AWS()
         docker = Docker()
 
-        print(aws.get_menu())
-
         self.extentions = {
             'aws': aws,
             'docker': docker
