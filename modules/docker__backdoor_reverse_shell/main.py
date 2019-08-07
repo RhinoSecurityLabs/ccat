@@ -45,21 +45,21 @@ def main(args):
 
     try:
         docker_build_response = docker_build(docker_client, target_image, injected_image, args['injection'])
+
+        out = 'Built {} and injected'.format(docker_build_response)
+        print(out)
+
+        data['payload'].update({
+            'repository_uri': args['repository_uri'],
+            'target_image_tag': args['target_image_tag'],
+            'build_image_tag': args['build_image_tag'],
+            'injection': args['injection']
+        })
+        data['count'] = 1
+        
     except Exception as e:
         print(e)
 
-    out = 'Built {} and injected'.format(docker_build_response)
-    print(out)
-
-    data['payload'].update({
-        'repository_uri': args['repository_uri'],
-        'target_image_tag': args['target_image_tag'],
-        'build_image_tag': args['build_image_tag'],
-        'injection': args['injection']
-    })
-    
-    data['count'] = 1
-    
     return data
 
 
