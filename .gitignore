@@ -34,3 +34,4 @@ tmp/**
 test-results.xml
 !build/
 /data
+/test
