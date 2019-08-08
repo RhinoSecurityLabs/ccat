@@ -3,11 +3,6 @@ import json
 import sys
 
 
-#   TODO: Add README.md
-#   TODO: Create a Dockerfile file
-#   TODO: Create a DockerCompose file
-
-
 import boto3
 import fire
 from pyfiglet import figlet_format
