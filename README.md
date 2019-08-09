@@ -14,7 +14,7 @@ Install CCAT with pip
 Install CCAT from source
 
 ```
-  $ git clone https://github.com/RhinoSecurityLabs/container-hack.git
+  $ git clone https://github.com/RhinoSecurityLabs/ccat.git
   $ cd container-hack
   $ python3 setup.py install
   $ python3 main.py
