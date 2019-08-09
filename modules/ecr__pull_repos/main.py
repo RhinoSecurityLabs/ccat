@@ -116,7 +116,7 @@ def set_args(aws_cli_profile, aws_region, aws_ecr_repository_uri, aws_ecr_reposi
 #
 #   Example:
         # python ./modules/ecr__pull_repos/main.py \
-        #   0> echo cloudgoat us-east-1 999999999.dkr.ecr.us-east-1.amazonaws.com/nginx "['tag1','tag2']" \
+        #   0> read cloudgoat us-east-1 999999999.dkr.ecr.us-east-1.amazonaws.com/nginx "['tag1','tag2']" \
         #   2> pull_err.txt \
         #   1> pull_out.txt
 if __name__ == "__main__":

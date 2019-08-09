@@ -80,7 +80,7 @@ def set_args(repository_uri, target_image_tag, build_image_tag, injection):
 #
 #   Example:
         # python ./modules/docker__backdoor/main.py \
-        # 0> echo nginx latest backdoored 'RUN echo haha > ccat2.txt' \
+        # 0> read nginx latest backdoored 'RUN echo haha > ccat2.txt' \
         # 2> docker_err.txt \
         # 1> docker_out.txt
 if __name__ == "__main__":
