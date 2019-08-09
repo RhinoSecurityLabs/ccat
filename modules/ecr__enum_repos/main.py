@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import os
-import boto3
 import json
+import sys
+
+import boto3
+import fire
 
 
 #   TODO: Accept command line args
@@ -97,7 +100,7 @@ def enum_repos(profile, aws_regions, data):
                 total += count
                 
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
 
     data['count'] = total
 
@@ -124,13 +127,24 @@ def summary(data):
 
     return out
 
+#python main.py cloudgoat "['us-east-1','us-west-2']"
+def set_args(aws_cli_profile, aws_regions):
+    print(aws_regions)
+    if type(aws_regions) is list:
+        args = {
+            'aws_cli_profile': 'cloudgoat',
+            'aws_regions': aws_regions
+        }
+    else:
+        print('Regions must be a list.\n\tExample list format:\n\t\tpython main.py <aws-profile> \"[\'us-east-1\',\'us-west-2\']\"', file=sys.stderr)
+        sys.exit(1)
+
+    return args
 
 if __name__ == "__main__":
     print('Running module {}...'.format(module_info['name']))
-    args = {
-        'aws_cli_profile': 'cloudgoat',
-        'aws_regions': ['us-east-1']
-    }
+
+    args = fire.Fire(set_args)
     data = main(args) 
 
     if data is not None:
