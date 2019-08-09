@@ -28,8 +28,11 @@ Use CCAT's Docker Image
   $ docker run -it -v ~/.aws:/root/.aws/ -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/app/ rhinosecuritylabs/ccat:latest
 ```
 
-## Basic Usage
+## Example Usage
+### Enumrate Amazon Elastic Container Registry (ECR)
+![Image of CCAT Screenshot](docs/images/enum_ecr_repos_select_regions.png)
+![Image of CCAT Screenshot](docs/images/enum_ecr_repos_summary.png)
+![Image of CCAT Screenshot](docs/images/enum_ecr_repos_data_dir.png)
 
 ## Disclaimer
-
 * CCAT is tool that comes with absolutely no warranties whatsoever. By using Rhino Container Hack CLI, you take full responsibility for any and all outcomes that result.
