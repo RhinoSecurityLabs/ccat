@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
-import boto3, docker, base64, json
+import base64
+import json
+import sys
 
-#   TODO: Accept command line args
-#   TODO: Implement a better error handling
+
+import fire
+import boto3
+import docker
+
+
 #   TODO: Pull multiple repos with different tags
+
 
 module_info = {
     'name': 'ecr__pull_repos',
     'author': 'Jack Ganbold of Rhino Security Labs',
     'category': 'Container',
-    'one_liner': 'Does this thing.',
+    'one_liner': 'Pulls ECR repositories.',
     'description': 'Pulls ECR repositories.',
     'services': ['ECR'],
     'prerequisite_modules': [],
@@ -19,6 +26,7 @@ module_info = {
 
 
 DOCKER_LOGIN_SUCCEEDED = 'Login Succeeded'
+DOCKER_BASE_URL = 'unix:///var/run/docker.sock'
 
 
 def get_aws_session(aws_cli_profile, aws_region):
@@ -46,7 +54,7 @@ def ecr_pull(args, data):
         ecr_client = aws_session.client('ecr')
         token = ecr_client.get_authorization_token()
 
-        docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+        docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
         docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
         docker_login_response = docker_login(docker_client, docker_username, docker_password, docker_registry)
 
@@ -61,13 +69,13 @@ def ecr_pull(args, data):
                     data['payload']['aws_ecr_repository_tags'].append(tag)
                     print(out)
                 except Exception as e:
-                    print(e)
+                    print(e, file=sys.stderr)
 
             data['count'] = count
             data['payload']['aws_ecr_repository_uri'] = args['aws_ecr_repository_uri']
             data['payload']['aws_region'] = args['aws_region'] 
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
 
 def main(args):
     data  = {
@@ -87,19 +95,34 @@ def main(args):
 def summary(data):
     out = ''
     out += '{} ECR Repositories Pulled\n'.format(data['count']) 
-    out += 'ECR resources saved in memory databse.\n'
+    out += 'ECR resources saved and use \'docker images\' command to check the result.\n'
     return out
 
 
-if __name__ == "__main__":
-    print('Running module {}...'.format(module_info['name']))
+def set_args(aws_cli_profile, aws_region, aws_ecr_repository_uri, aws_ecr_repository_tags):
     args = {
-        'aws_cli_profile':'cloudgoat',
-        'aws_region':'us-east-1',
-        'aws_ecr_repository_uri': '216825089941.dkr.ecr.us-east-1.amazonaws.com/pacu',
-        'aws_ecr_repository_tags': ['latest', 'hahah']
+        'aws_cli_profile': aws_cli_profile,
+        'aws_region': aws_region,
+        'aws_ecr_repository_uri': aws_ecr_repository_uri,
+        'aws_ecr_repository_tags': aws_ecr_repository_tags
     }
 
+    return args
+
+# Run it with sdtin, sdtout, sdterr
+#   standard input	0>
+#   standard output	1>
+#   standard error	2>
+#
+#   Example:
+        # python ./modules/ecr__pull_repos/main.py \
+        #   0> echo cloudgoat us-east-1 999999999.dkr.ecr.us-east-1.amazonaws.com/nginx "['tag1','tag2']" \
+        #   2> pull_err.txt \
+        #   1> pull_out.txt
+if __name__ == "__main__":
+    print('Running module {}...'.format(module_info['name']))
+    
+    args = fire.Fire(set_args)
     data = main(args)
 
     if data is not None:
