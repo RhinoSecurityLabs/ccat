@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import json
 import sys
 
@@ -15,8 +15,8 @@ import modules.docker__backdoor_reverse_shell.main as docker__backdoor
 import modules.ecr__push_repos.main as ecr__push_repos
 
 
-ENUMRATE_ECR = 'Enumrate ECR'
-PULL_ECR_REPOSE = 'Pull Repos from ECR'
+ENUMERATE_ECR = 'Enumrate ECR'
+PULL_ECR_REPOS = 'Pull Repos from ECR'
 PUSH_ECR_REPOS = 'Push Repos to ECR'
 DOCKER_BACKDOOR = 'Docker Backdoor'
 
@@ -37,7 +37,7 @@ class CLI(object):
     def main_menu(self):
         menu_choices=[]
         for extention in self.extentions.values():
-            menu_choices += extention.get_menu()
+            menu_choices.extend(extention.get_menu())
 
         menu_choices += self.get_helper_menu()
 
@@ -69,13 +69,13 @@ class CLI(object):
             print('MODULE SUMMARY:\n\n{}\n'.format(summary.strip('\n')))  
 
     def run_module(self, answers):
-        if ENUMRATE_ECR in answers['main_menu']:
+        if ENUMERATE_ECR in answers['main_menu']:
             cli_answers = self.extentions['aws'].ask_ecr_enum_repos()
             self.print_module_running(ecr__enum_repos.module_info['name'])
             data = ecr__enum_repos.main(cli_answers)
             self.print_module_summary(data, ecr__enum_repos)
 
-        elif PULL_ECR_REPOSE in answers['main_menu']:
+        elif PULL_ECR_REPOS in answers['main_menu']:
             cli_answers = self.extentions['aws'].ask_ecr_pull_repos()
             self.print_module_running(ecr__pull_repos.module_info['name'])
             data = ecr__pull_repos.main(cli_answers)
@@ -125,9 +125,9 @@ class AWS(object):
             'region': region
         }
 
-    def get_available_regions(self):
+    def get_available_regions(self, service_name):
         aws_session = boto3.Session()
-        regions = aws_session.get_available_regions('ec2')
+        regions = aws_session.get_available_regions(service_name)
 
         return regions
 
@@ -143,8 +143,8 @@ class AWS(object):
     def get_menu(self):
         return [
             Separator('= AWS ({} | {}) ='.format(self.configuration['profile'], self.configuration['region'])),
-            ENUMRATE_ECR,
-            PULL_ECR_REPOSE,
+            ENUMERATE_ECR,
+            PULL_ECR_REPOS,
             PUSH_ECR_REPOS
         ]
 
@@ -152,7 +152,7 @@ class AWS(object):
         if self.is_configured() is False:
             self.set_configuration()
 
-        aws_regions = self.get_available_regions()
+        aws_regions = self.get_available_regions('ecr')
 
         questions= [
             {
