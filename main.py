@@ -31,7 +31,7 @@ class CLI(object):
             'docker': docker
         }
 
-    def print_title(self, text='Rhino\'s Container Hack CLI', font='slant'):
+    def print_title(self, text='Rhino Container Hack CLI', font='slant'):
         print(figlet_format(text, font=font))
 
     def main_menu(self):
