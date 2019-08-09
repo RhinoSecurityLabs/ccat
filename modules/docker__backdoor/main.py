@@ -74,7 +74,7 @@ def set_args(repository_uri, target_image_tag, build_image_tag, injection):
 
 
 # Run it with sdtin, sdtout, sdterr
-#   standard input	0<
+#   standard input	0>
 #   standard output	1>
 #   standard error	2>
 #
