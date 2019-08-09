@@ -41,7 +41,7 @@ def main(args):
 
     target_image = args['repository_uri'] + ":" + args['target_image_tag'] 
     injected_image = args['repository_uri'] + ":" + args['build_image_tag'] 
-    docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+    docker_client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
 
     try:
         docker_build_response = docker_build(docker_client, target_image, injected_image, args['injection'])
@@ -64,8 +64,7 @@ def main(args):
 
 
 def summary(data):
-    out = ''
-    out += '{} Images injected'.format(data['count'])
+    out = '{} Images injected'.format(data['count'])
     return out
 
 
