@@ -1,9 +1,12 @@
-import boto3, docker, base64, json
+import base64
+import json
+import sys
 
 
-DOCKER_LOGIN_SUCCEEDED = 'Login Succeeded'
-DOCKER_PUSH_ERROR = 'errorDetail'
-DOCKER_BASE_URL = 'unix:///var/run/docker.sock'
+import fire
+import boto3
+import docker
+
 
 module_info = {
     'name': 'erc__push_repos',
@@ -16,6 +19,11 @@ module_info = {
     'external_dependencies': [],
     'arguments_to_autocomplete': [],
 }
+
+
+DOCKER_LOGIN_SUCCEEDED = 'Login Succeeded'
+DOCKER_PUSH_ERROR = 'errorDetail'
+DOCKER_BASE_URL = 'unix:///var/run/docker.sock'
 
 
 def get_aws_session(aws_cli_profile, aws_region):
@@ -35,9 +43,11 @@ def get_docker_username_password_registery(token):
 
 def docker_push(docker_client, image, aws_ecr_repository_tag):
     for line in docker_client.images.push(image, tag=aws_ecr_repository_tag, stream=True, decode=True):
-        print(line)
         if DOCKER_PUSH_ERROR in line:
+            print(line, file=sys.stderr)
             return False
+
+        print(line)
 
     return True
 
@@ -67,7 +77,7 @@ def main(args):
             else:
                 data['count'] = 0
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
     
     return data
 
@@ -78,15 +88,20 @@ def summary(data):
     return out
 
 
-if __name__ == "__main__":
-    print('Running module {}...'.format(module_info['name']))
+def set_args(aws_cli_profile, aws_region, aws_ecr_repository_uri, aws_ecr_repository_tag):
     args = {
-        'aws_cli_profile': 'cloudgoat',
-        'aws_region': 'us-east-1',
-        'aws_ecr_repository_uri': '216825089941.dkr.ecr.us-east-1.amazonaws.com/pacu',
-        'aws_ecr_repository_tag': 'latest'
+        'aws_cli_profile': aws_cli_profile,
+        'aws_region': aws_region,
+        'aws_ecr_repository_uri': aws_ecr_repository_uri,
+        'aws_ecr_repository_tag': aws_ecr_repository_tag
     }
 
+    return args
+
+if __name__ == "__main__":
+    print('Running module {}...'.format(module_info['name']))
+    
+    args = fire.Fire(set_args)
     data = main(args)
 
     if data is not None:
