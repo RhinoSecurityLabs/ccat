@@ -2,14 +2,6 @@ import docker
 from io import BytesIO
 
 
-#   TODO: Seperate target_image_tag and build_image_tag
-#   TODO: Fix reverse shell
-#   TODO: Let reverse shell works with different types OS images
-#   TODO: Add manual entry for script
-#   TODO: Add public key backdoor
-#   TODO: Add crontab backdoor
-
-
 module_info = {
     'name': 'docker__backdoor',
     'author': 'Jack Ganbold of Rhino Security Labs',
