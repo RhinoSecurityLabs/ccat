@@ -35,4 +35,4 @@ Use CCAT's Docker Image
 ![Image of CCAT Screenshot](docs/images/enum_ecr_repos_data_dir.png)
 
 ## Disclaimer
-* CCAT is tool that comes with absolutely no warranties whatsoever. By using Rhino Container Hack CLI, you take full responsibility for any and all outcomes that result.
+* CCAT is tool that comes with absolutely no warranties whatsoever. By using CCAT, you take full responsibility for any and all outcomes that result.
