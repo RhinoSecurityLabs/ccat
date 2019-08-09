@@ -3,13 +3,13 @@ import boto3, docker, base64, json
 
 DOCKER_LOGIN_SUCCEEDED = 'Login Succeeded'
 DOCKER_PUSH_ERROR = 'errorDetail'
-
+DOCKER_BASE_URL = 'unix:///var/run/docker.sock'
 
 module_info = {
     'name': 'erc__push_repos',
     'author': 'Jack Ganbold of Rhino Security Labs',
     'category': 'Docker',
-    'one_liner': 'Does this thing.',
+    'one_liner': 'Pushes docker images to ECR repositories.',
     'description': 'Pushes docker images to ECR repositories.',
     'services': ['ECR'],
     'prerequisite_modules': [],
@@ -49,7 +49,7 @@ def main(args):
     try:
         aws_session = get_aws_session(args['aws_cli_profile'], args['aws_region'])
         ecr_client = aws_session.client('ecr')
-        docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+        docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
 
         token = ecr_client.get_authorization_token()
         docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
@@ -74,7 +74,7 @@ def main(args):
 def summary(data):
     out = ''
     out += '{} ECR Repositories Pushed\n'.format(data['count'])
-    out += 'ECR recources saved in memory databse.\n'
+    out += 'ECR recources saved in memory database.\n'
     return out
 
 
