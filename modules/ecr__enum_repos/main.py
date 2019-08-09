@@ -11,10 +11,10 @@ SAVE_TO_FILE_PATH = '{}/ecr__enum_repos_data.json'.format(SAVE_TO_FILE_DIRECTORY
 
 
 module_info = {
-    'name': 'erc__enum_repos',
+    'name': 'ecr__enum_repos',
     'author': 'Jack Ganbold of Rhino Security Labs',
     'category': 'ENUM',
-    'one_liner': 'Does this thing.',
+    'one_liner': 'Enumerates ECR repositories.',
     'description': 'Enumerates ECR repositories.',
     'services': ['ECR'],
     'prerequisite_modules': [],
@@ -25,7 +25,7 @@ module_info = {
 
 
 def get_aws_session(profile, region):
-    return boto3.session.Session(profile_name=profile, region_name=region)
+    return boto3.Session(profile_name=profile, region_name=region)
 
 
 def get_ecr_repos(ecr_client):
@@ -75,7 +75,7 @@ def save_to_file(data):
 
 
 def enum_repos(profile, aws_regions, data):
-    sum = 0
+    total = 0
 
     try:
         for region in aws_regions:
@@ -94,12 +94,12 @@ def enum_repos(profile, aws_regions, data):
                 count = len(ecr_repos)
                 out = "Found {} repositories in {}".format(count, region)
                 print(out)
-                sum += count
+                total += count
                 
     except Exception as e:
         print(e)
 
-    data['count'] = sum
+    data['count'] = total
 
 
 def main(args):
@@ -119,7 +119,7 @@ def main(args):
 
 def summary(data):
     out = ''
-    out += 'Total {} ECR Repositories Enumrated\n'.format(data['count'])
+    out += 'Total {} ECR Repositories Enumerated\n'.format(data['count'])
     out += 'ECR recources saved under {}.\n'.format(module_info['data_saved'])
 
     return out
