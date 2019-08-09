@@ -11,11 +11,11 @@ from io import BytesIO
 
 
 module_info = {
-    'name': 'docker__backdoor_reverse_shell',
+    'name': 'docker__backdoor',
     'author': 'Jack Ganbold of Rhino Security Labs',
     'category': 'PERSIST',
-    'one_liner': 'Does this thing.',
-    'description': 'Add reverse shell into the entrypoint of a docker image.',
+    'one_liner': 'Inject backdoor into a docker image.',
+    'description': 'Inject backdoor into a docker image.',
     'services': ['Docker'],
     'prerequisite_modules': [],
     'external_dependencies': [],
