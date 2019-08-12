@@ -32,16 +32,28 @@ def get_aws_session(profile, region):
 
 
 def get_ecr_repos(ecr_client):
-    data = None
+    data = []
+    nextToken = None
 
     try:
-        response = ecr_client.describe_repositories()
-        if not response['repositories']:
-            pass
-        else:
-            data = response['repositories']
-    except:
-        pass
+        while True:
+            if nextToken is None:
+                response = ecr_client.describe_repositories()
+            else:
+                response = ecr_client.describe_repositories(nextToken=nextToken)
+
+            if response['repositories']:
+                data.extend(response['repositories'])
+            elif len(data) == 0:
+                break
+
+            if not response['nextToken']:
+                break
+            else:
+                nextToken = response['nextToken']
+
+    except Exception as e:
+        print(e, file=sys.stderr)
 
     return data
 
@@ -86,7 +98,7 @@ def enum_repos(profile, aws_regions, data):
             ecr_client = aws_session.client('ecr')
             ecr_repos = get_ecr_repos(ecr_client)
 
-            if ecr_repos is not None:
+            if len(ecr_repos) != 0:
                 data['payload']['aws_regions'].append(region)
                 data['payload']['repositories_by_region'].update({
                     region: ecr_repos
