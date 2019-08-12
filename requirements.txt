@@ -3,3 +3,4 @@ docker
 PyInquirer
 pyfiglet
 fire
+tabulate

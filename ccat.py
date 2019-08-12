@@ -7,6 +7,7 @@ import boto3
 import fire
 from pyfiglet import figlet_format
 from PyInquirer import (prompt, Separator)
+from tabulate import tabulate
 
 
 import modules.ecr__enum_repos.main as ecr__enum_repos
@@ -73,7 +74,11 @@ class CLI(object):
             cli_answers = self.extentions['aws'].ask_ecr_enum_repos()
             self.print_module_running(ecr__enum_repos.module_info['name'])
             data = ecr__enum_repos.main(cli_answers)
+            self.extentions['aws'].data.update({'ecr_repos': data})
+            print('ECR REPOS')
+            print(json.dumps(self.extentions['aws'].data, indent=4, default=str))
             self.print_module_summary(data, ecr__enum_repos)
+            self.extentions['aws'].print_ecr_repos()
 
         elif PULL_ECR_REPOS in answers['main_menu']:
             cli_answers = self.extentions['aws'].ask_ecr_pull_repos()
@@ -125,6 +130,8 @@ class AWS(object):
             'region': region
         }
 
+        self.data = {}
+
     def get_available_regions(self, service_name):
         aws_session = boto3.Session()
         regions = aws_session.get_available_regions(service_name)
@@ -147,6 +154,29 @@ class AWS(object):
             PULL_ECR_REPOS,
             PUSH_ECR_REPOS
         ]
+
+    # There could be a problem when printing 1000s of ECR repos
+    def print_ecr_repos(self):
+        headers = ['Repo Name', 'Repo Uri', 'Tags', 'Region']
+        rows = []
+
+        if self.data['ecr_repos'] and self.data['ecr_repos']['count'] > 0:
+            for region in self.data['ecr_repos']['payload']['aws_regions']:
+                repos = self.data['ecr_repos']['payload']['repositories_by_region'][region]
+                for repo in repos:
+                    row = []
+                    row.append(repo['repositoryName'])
+                    row.append(repo['repositoryUri'])
+                    tags = []
+                    for image_id in repo['image_ids']:
+                        if 'imageTag' in image_id:
+                            tags.append(image_id['imageTag'])
+                    row.append(tags)
+                    row.append(region)
+
+                    rows.append(row)
+
+        print(tabulate(rows, headers=headers,  tablefmt='orgtbl'), '\n')            
 
     def ask_ecr_enum_repos(self):
         if self.is_configured() is False:
