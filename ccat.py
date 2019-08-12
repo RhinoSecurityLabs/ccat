@@ -20,6 +20,7 @@ ENUMERATE_ECR = 'Enumrate ECR'
 PULL_ECR_REPOS = 'Pull Repos from ECR'
 PUSH_ECR_REPOS = 'Push Repos to ECR'
 DOCKER_BACKDOOR = 'Docker Backdoor'
+LIST_ECR_REPOS = 'List ECR Repos'
 
 
 class CLI(object):
@@ -75,9 +76,9 @@ class CLI(object):
             self.print_module_running(ecr__enum_repos.module_info['name'])
             data = ecr__enum_repos.main(cli_answers)
             self.extentions['aws'].data.update({'ecr_repos': data})
-            print('ECR REPOS')
-            print(json.dumps(self.extentions['aws'].data, indent=4, default=str))
             self.print_module_summary(data, ecr__enum_repos)
+
+        elif LIST_ECR_REPOS in answers['main_menu']:
             self.extentions['aws'].print_ecr_repos()
 
         elif PULL_ECR_REPOS in answers['main_menu']:
@@ -151,6 +152,7 @@ class AWS(object):
         return [
             Separator('= AWS ({} | {}) ='.format(self.configuration['profile'], self.configuration['region'])),
             ENUMERATE_ECR,
+            LIST_ECR_REPOS,
             PULL_ECR_REPOS,
             PUSH_ECR_REPOS
         ]
@@ -160,7 +162,7 @@ class AWS(object):
         headers = ['Repo Name', 'Repo Uri', 'Tags', 'Region']
         rows = []
 
-        if self.data['ecr_repos'] and self.data['ecr_repos']['count'] > 0:
+        if self.data.get('ecr_repos') and self.data.get('ecr_repos').get('count') > 0:
             for region in self.data['ecr_repos']['payload']['aws_regions']:
                 repos = self.data['ecr_repos']['payload']['repositories_by_region'][region]
                 for repo in repos:
@@ -201,7 +203,7 @@ class AWS(object):
     def ask_ecr_pull_repos(self):
         if self.is_configured() is False:
             self.set_configuration()
-
+            
         questions = [
             {
                 'type': 'input',
