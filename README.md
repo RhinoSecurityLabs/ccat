@@ -6,18 +6,18 @@ _Cloud Container Attack Tool (CCAT) is a tool for testing security of container 
 ![Image of CCAT Screenshot](docs/images/ccat_main_menu.png)
 
 ## Installation
-Install CCAT with pip
+<!-- Install CCAT with pip
 ```
  $ pip install ccat
-```
+``` -->
 
 Install CCAT from source
 
 ```
   $ git clone https://github.com/RhinoSecurityLabs/ccat.git
-  $ cd container-hack
+  $ cd ccat
   $ python3 setup.py install
-  $ python3 main.py
+  $ python3 ccat.py
 ```
 
 Use CCAT's Docker Image
