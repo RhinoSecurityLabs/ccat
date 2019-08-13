@@ -1,14 +1,14 @@
-"""The setup.py file for Rhino Container Hack CLI."""
+"""The setup.py file for Cloud Container Hack Tool."""
 
 from setuptools import setup
 
 
 LONG_DESCRIPTION = """
-Rhino Container Hack CLI is a tool for testing security of container environments.
+Cloud Container Hack Tool is a tool for testing security of container environments.
 """.strip()
 
 SHORT_DESCRIPTION = """
-Rhino Container Hack CLI is a tool for testing security of container environments.""".strip()
+Cloud Container Hack Tool is a tool for testing security of container environments.""".strip()
 
 DEPENDENCIES = [
     'boto3',
@@ -25,7 +25,7 @@ VERSION = '0.1.0'
 URL = 'https://github.com/RhinoSecurityLabs/container-hack'
 
 setup(
-    name='container hack',
+    name='ccat',
     version=VERSION,
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
