@@ -356,7 +356,7 @@ class Docker(object):
             {
                 'type': 'input',
                 'name': 'repository_uri',
-                'message': 'Enter Docker source image name without tag'
+                'message': 'Enter Docker source image name'
             },
             {
                 'type': 'input',
@@ -366,7 +366,7 @@ class Docker(object):
             {
                 'type': 'input',
                 'name': 'build_image_tag',
-                'message': 'Enter Docker image new build tag'
+                'message': 'Enter Docker new image build tag'
             },
             {
                 'type': 'input',
