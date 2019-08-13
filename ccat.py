@@ -203,26 +203,47 @@ class AWS(object):
     def ask_ecr_pull_repos(self):
         if self.is_configured() is False:
             self.set_configuration()
-            
+
+        # aws_ecr_pull_all
         questions = [
             {
-                'type': 'input',
-                'name': 'aws_ecr_repository_uri',
-                'message': 'Enter AWS ECR repository URI'
-            },
-            {
-                'type': 'input',
-                'name': 'aws_ecr_repository_tags',
-                'message': 'Enter AWS ECR repository tags seperate by comma'
-            },
+                'type': 'list',
+                'name': 'ecr_pull_options',
+                'message': 'ECR Pull Options',
+                'choices': [
+                    'Pull All repos',
+                    'Pull single repo with multiple tags'
+                ]
+            }
         ]
 
         answers = prompt(questions)
 
-        # strip(',') remove leading or trailing (,)
-        # replace(' ', '') remove spaces
-        # split by comma to generate a list of tags
-        answers['aws_ecr_repository_tags'] = answers['aws_ecr_repository_tags'].strip(',').replace(' ', '').split(',')
+        if 'Pull All repos' == answers.get('ecr_pull_options'):
+            answers.update({
+                'ecr_repos': self.data.get('ecr_repos').get('payload')
+            })
+        else:
+            questions = [
+                {
+                    'type': 'input',
+                    'name': 'aws_ecr_repository_uri',
+                    'message': 'Enter AWS ECR repository URI'
+                },
+                {
+                    'type': 'input',
+                    'name': 'aws_ecr_repository_tags',
+                    'message': 'Enter AWS ECR repository tags seperate by comma'
+                },
+            ]
+
+            answers = prompt(questions)
+
+            # strip(',') remove leading or trailing (,)
+            # replace(' ', '') remove spaces
+            # split by comma to generate a list of tags
+            answers['aws_ecr_repository_tags'] = answers['aws_ecr_repository_tags'].strip(',').replace(' ', '').split(',')
+            
         self.append_configuration(answers)
 
         return answers
