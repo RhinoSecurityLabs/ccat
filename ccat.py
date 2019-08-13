@@ -20,7 +20,7 @@ ENUMERATE_ECR = 'Enumerate ECR'
 PULL_ECR_REPOS = 'Pull Repos from ECR'
 PUSH_ECR_REPOS = 'Push Repos to ECR'
 DOCKER_BACKDOOR = 'Docker Backdoor'
-LIST_ECR_REPOS = 'List ECR Repos'
+LIST_ECR_REPOS = 'List Enumerated ECR Repos'
 SWAP_AWS_PROFILE = 'Swap AWS Profile'
 
 
@@ -211,7 +211,7 @@ class AWS(object):
             {
                 'type': 'checkbox',
                 'name': 'aws_regions',
-                'message': 'Select AWS regions to enumrate',
+                'message': 'Select AWS regions to enumerate',
                 'choices': self.get_menu_choices_regions(aws_regions)
             }
         ]
@@ -232,7 +232,7 @@ class AWS(object):
                 'name': 'ecr_pull_options',
                 'message': 'ECR Pull Options',
                 'choices': [
-                    'Pull All repos',
+                    'Pull All enumerated repos',
                     'Pull single repo with multiple tags'
                 ]
             }
@@ -240,10 +240,11 @@ class AWS(object):
 
         answers = prompt(questions)
 
-        if 'Pull All repos' == answers.get('ecr_pull_options'):
-            answers.update({
-                'ecr_repos': self.data.get('ecr_repos').get('payload')
-            })
+        if 'Pull All enumerated repos' == answers.get('ecr_pull_options'):
+            if self.data.get('ecr_repos') and self.data.get('ecr_repos').get('payload'):
+                answers.update({
+                    'ecr_repos': self.data.get('ecr_repos').get('payload')
+                })
         else:
             questions = [
                 {
