@@ -6,7 +6,7 @@ import sys
 import boto3
 import fire
 from pyfiglet import figlet_format
-from PyInquirer import (prompt, Separator)
+from PyInquirer import (prompt, Separator, style_from_dict, Token)
 from tabulate import tabulate
 
 
@@ -21,7 +21,19 @@ PULL_ECR_REPOS = 'Pull Repos from ECR'
 PUSH_ECR_REPOS = 'Push Repos to ECR'
 DOCKER_BACKDOOR = 'Docker Backdoor'
 LIST_ECR_REPOS = 'List ECR Repos'
+SWAP_AWS_PROFILE = 'Swap AWS Profile'
 
+
+custom_style = style_from_dict({
+    Token.Separator: '#6C6C6C',
+    Token.QuestionMark: '#FF9D00 bold',
+    #Token.Selected: '',  # default
+    Token.Selected: '#5F819D',
+    Token.Pointer: '#FF9D00 bold',
+    Token.Instruction: '',  # default
+    Token.Answer: '#5F819D bold',
+    Token.Question: '',
+})
 
 class CLI(object):
     def __init__(self):
@@ -52,7 +64,7 @@ class CLI(object):
             }
         ]
 
-        answers = prompt(questions)
+        answers = prompt(questions, style=custom_style)
 
         return answers
 
@@ -99,12 +111,15 @@ class CLI(object):
             data = docker__backdoor.main(cli_answers)
             self.print_module_summary(data, docker__backdoor)
 
+        elif SWAP_AWS_PROFILE in answers['main_menu']:
+            self.extentions['aws'].swap_profile()
+
         else:
             self.exit_cli()
 
     def get_helper_menu(self):
         return [
-            Separator('= Exit CLI ='),
+            Separator(),
             'Exit'
         ]
 
@@ -150,12 +165,18 @@ class AWS(object):
 
     def get_menu(self):
         return [
-            Separator('= AWS ({} | {}) ='.format(self.configuration['profile'], self.configuration['region'])),
+            Separator('= AWS ({}) ='.format(self.configuration['profile'])),
             ENUMERATE_ECR,
             LIST_ECR_REPOS,
             PULL_ECR_REPOS,
-            PUSH_ECR_REPOS
+            PUSH_ECR_REPOS,
+            SWAP_AWS_PROFILE
         ]
+
+    def swap_profile(self):
+        if self.configuration.get('profile'):
+            print('Current profile: {}'.format(self.configuration.get('profile')))
+        self.set_configuration()
 
     # There could be a problem when printing 1000s of ECR repos
     def print_ecr_repos(self):
