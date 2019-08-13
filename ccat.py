@@ -232,7 +232,7 @@ class AWS(object):
                 'name': 'ecr_pull_options',
                 'message': 'ECR Pull Options',
                 'choices': [
-                    'Pull All enumerated repos',
+                    'Pull all enumerated repos',
                     'Pull single repo with multiple tags'
                 ]
             }
@@ -240,7 +240,7 @@ class AWS(object):
 
         answers = prompt(questions)
 
-        if 'Pull All enumerated repos' == answers.get('ecr_pull_options'):
+        if 'Pull all enumerated repos' == answers.get('ecr_pull_options'):
             if self.data.get('ecr_repos') and self.data.get('ecr_repos').get('payload'):
                 answers.update({
                     'ecr_repos': self.data.get('ecr_repos').get('payload')
@@ -260,7 +260,7 @@ class AWS(object):
                 {
                     'type': 'input',
                     'name': 'aws_ecr_repository_tags',
-                    'message': 'Enter AWS ECR repository tags seperate by comma'
+                    'message': 'Enter AWS ECR repository tags seperated by comma'
                 }
             ]
 
@@ -288,12 +288,12 @@ class AWS(object):
             {
                 'type': 'input',
                 'name': 'aws_ecr_repository_uri',
-                'message': 'Enter Docker image that named after AWS ECR repository URI'
+                'message': 'Enter AWS ECR repository URI'
             },
             {
                 'type': 'input',
                 'name': 'aws_ecr_repository_tag',
-                'message': 'Enter Docker image tag'
+                'message': 'Enter AWS ECR repository tag'
             }
         ]
 
@@ -358,17 +358,17 @@ class Docker(object):
             {
                 'type': 'input',
                 'name': 'repository_uri',
-                'message': 'Enter Docker source image name'
+                'message': 'Enter Docker repository name'
             },
             {
                 'type': 'input',
                 'name': 'target_image_tag',
-                'message': 'Enter Docker source image tag'
+                'message': 'Enter Docker repository tag'
             },
             {
                 'type': 'input',
                 'name': 'build_image_tag',
-                'message': 'Enter Docker new image build tag'
+                'message': 'Enter new Docker repository build tag'
             },
             {
                 'type': 'input',
