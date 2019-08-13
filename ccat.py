@@ -227,6 +227,11 @@ class AWS(object):
             questions = [
                 {
                     'type': 'input',
+                    'name': 'aws_region',
+                    'message': 'Enter AWS region name'
+                },
+                {
+                    'type': 'input',
                     'name': 'aws_ecr_repository_uri',
                     'message': 'Enter AWS ECR repository URI'
                 },
@@ -234,7 +239,7 @@ class AWS(object):
                     'type': 'input',
                     'name': 'aws_ecr_repository_tags',
                     'message': 'Enter AWS ECR repository tags seperate by comma'
-                },
+                }
             ]
 
             answers = prompt(questions)
@@ -253,6 +258,11 @@ class AWS(object):
             self.set_configuration()
 
         questions = [
+            {
+                'type': 'input',
+                'name': 'aws_region',
+                'message': 'Enter AWS region name'
+            },
             {
                 'type': 'input',
                 'name': 'aws_ecr_repository_uri',
@@ -278,12 +288,6 @@ class AWS(object):
                 'name': 'aws_cli_profile',
                 'message': 'Enter AWS profile name',
                 'validate': lambda profile: len(profile) != 0 or 'AWS profile name can not be empty!'
-            },
-            {
-                'type': 'input',
-                'name': 'aws_region',
-                'message': 'Enter AWS region name',
-                'validate': lambda region: len(region) != 0 or 'AWS region can not be empty!'
             }
         ]
 
@@ -296,22 +300,25 @@ class AWS(object):
 
         print('Configuring AWS...')    
         self.configuration.update({
-            'profile': answers['aws_cli_profile'],
-            'region': answers['aws_region']
+            'profile': answers['aws_cli_profile']
         })
 
         print('Successfully configured AWS\n')
 
     def is_configured(self):
-        return self.configuration['profile'] is not None and self.configuration['region'] is not None
+        return self.configuration['profile'] is not None
 
     def print_configuration(self):
         print(json.dumps(self.configuration, indent=4, default=str))
 
     def append_configuration(self, answers):
+        if not answers.get('aws_region'):
+            answers.update({
+                'aws_region': self.configuration['region']
+            })
+
         answers.update({
-            'aws_cli_profile': self.configuration['profile'],
-            'aws_region': self.configuration['region']
+            'aws_cli_profile': self.configuration['profile']
         })
 
 
