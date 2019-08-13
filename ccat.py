@@ -16,7 +16,7 @@ import modules.docker__backdoor.main as docker__backdoor
 import modules.ecr__push_repos.main as ecr__push_repos
 
 
-ENUMERATE_ECR = 'Enumrate ECR'
+ENUMERATE_ECR = 'Enumerate ECR'
 PULL_ECR_REPOS = 'Pull Repos from ECR'
 PUSH_ECR_REPOS = 'Push Repos to ECR'
 DOCKER_BACKDOOR = 'Docker Backdoor'
