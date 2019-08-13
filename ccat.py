@@ -303,7 +303,9 @@ class AWS(object):
         return answers
 
     def ask_configuration(self):
-        print('Did not find AWS configuration!')
+        if not self.configuration.get('profile'):
+            print('Did not find AWS configuration!')
+            
         questions = [
             {
                 'type': 'input',
