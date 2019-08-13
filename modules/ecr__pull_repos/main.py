@@ -9,9 +9,6 @@ import boto3
 import docker
 
 
-#   TODO: Pull multiple repos with different tags
-
-
 module_info = {
     'name': 'ecr__pull_repos',
     'author': 'Jack Ganbold of Rhino Security Labs',
@@ -47,6 +44,36 @@ def get_docker_username_password_registery(token):
 def docker_pull(docker_client, repo):
     docker_pull_response = docker_client.images.pull(repo)
     return docker_pull_response
+
+
+
+def ecr_pull_all_repos(args, data):
+    ecr_repos = args.get('ecr_repos')
+    count = 0
+    print(json.dumps(ecr_repos, indent=4, default=str))
+    try:
+        if ecr_repos.get('aws_regions'):
+            for region in ecr_repos.get('aws_regions'):
+                aws_session = get_aws_session(args['aws_cli_profile'], region)
+                ecr_client = aws_session.client('ecr')
+                token = ecr_client.get_authorization_token()
+        
+                docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
+                docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
+                docker_login_response = docker_login(docker_client, docker_username, docker_password, docker_registry)
+    
+                if ecr_repos.get('repositories_by_region'):
+                    for repo in ecr_repos.get('repositories_by_region').get(region):
+                        if repo.get('repositoryUri'):
+                            docker_pull_response = docker_pull(docker_client, repo.get('repositoryUri'))
+                            out = 'Pulled {}'.format(docker_pull_response)
+                            count += 1
+                            print(out)
+
+        data['count'] = count
+    except Exception as e:
+        print(e, file=sys.stderr)
+    
 
 def ecr_pull(args, data):
     try:
@@ -87,7 +114,10 @@ def main(args):
         }
     }
 
-    ecr_pull(args, data)
+    if args.get('ecr_repos'):
+        ecr_pull_all_repos(args, data)
+    else:
+        ecr_pull(args, data)
 
     return data
 
