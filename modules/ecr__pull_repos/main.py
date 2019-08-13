@@ -50,7 +50,7 @@ def docker_pull(docker_client, repo):
 def ecr_pull_all_repos(args, data):
     ecr_repos = args.get('ecr_repos')
     count = 0
-    print(json.dumps(ecr_repos, indent=4, default=str))
+    
     try:
         if ecr_repos.get('aws_regions'):
             for region in ecr_repos.get('aws_regions'):
