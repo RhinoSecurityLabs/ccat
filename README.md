@@ -28,13 +28,13 @@ Install CCAT from source
 Use CCAT's Docker Image
 > Warning: Running this command will mount your local AWS configuration files into the Docker container when it is launched. This means that any user with access to the container will have access to your host computer's AWS credentials.
 
-> Warning: Running this command will mount your local Unix socket that Docker daemon listens on by default into the Docker container when it is launched. This means that user with access to the container will have accesso to your docker daemon. 
+> Warning: Running this command will mount your local Unix socket that Docker daemon listens on by default into the Docker container when it is launched. This means that users with access to the container will have access to your Docker daemon, meaning they could escape to your host computer with ease.
 ```
   $ docker run -it -v ~/.aws:/root/.aws/ -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/app/ rhinosecuritylabs/ccat:latest
 ```
 
 ## Getting Started
-The first time CCAT is launched, you will be prompted to configure AWS profile when you use one of AWS related modules. This profile will be used to run AWS related modules.
+The first time CCAT is launched, you will be prompted to configure your AWS CLI profile. This profile will be used to run the related AWS modules.
 
 ### Example Usage
 [![CCAT](docs/images/youtube_video_img.png)](http://www.youtube.com/watch?v=t484TcJVD08 "CCAT")
