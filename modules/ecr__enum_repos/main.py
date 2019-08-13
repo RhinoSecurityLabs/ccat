@@ -38,19 +38,19 @@ def get_ecr_repos(ecr_client):
     try:
         while True:
             if nextToken is None:
-                response = ecr_client.describe_repositories()
+                response = ecr_client.describe_repositories(maxResults=2)
             else:
-                response = ecr_client.describe_repositories(nextToken=nextToken)
+                response = ecr_client.describe_repositories(maxResults=2, nextToken=nextToken)
 
-            if response['repositories']:
-                data.extend(response['repositories'])
+            if response.get('repositories'):
+                data.extend(response.get('repositories'))
             elif len(data) == 0:
                 break
 
-            if not response['nextToken']:
-                break
-            else:
+            if response.get('nextToken'):
                 nextToken = response['nextToken']
+            else:
+                break
 
     except Exception as e:
         print(e, file=sys.stderr)
