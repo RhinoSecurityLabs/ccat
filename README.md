@@ -37,7 +37,7 @@ Use CCAT's Docker Image
 The first time CCAT is launched, you will be prompted to configure your AWS CLI profile. This profile will be used to run the related AWS modules.
 
 ### Example Usage
-[![CCAT](docs/images/youtube_video_img.png)](http://www.youtube.com/watch?v=t484TcJVD08 "CCAT")
+[![CCAT](docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
 
 ## Roadmap
 * Container Escape Features
