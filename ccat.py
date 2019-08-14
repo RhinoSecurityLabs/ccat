@@ -354,6 +354,7 @@ class Docker(object):
         ]
 
     def ask_docker_backdoor(self):
+        print("This module generates Dockerfile on the fly and builds new Docker image.")
         questions = [
             {
                 'type': 'input',
@@ -369,15 +370,55 @@ class Docker(object):
                 'type': 'input',
                 'name': 'build_image_tag',
                 'message': 'Enter new Docker repository build tag'
-            },
-            {
-                'type': 'input',
-                'name': 'injection',
-                'message': 'Enter Dockerfile instructions as injection\n  Example:\n      RUN echo \'Happy Hacking\' > hack.txt\n  Enter Instructions'
             }
         ]
 
         answers = prompt(questions)
+
+        instructions = []
+        dockerfile_from = 'FROM {}:{}\n'.format(answers['repository_uri'], answers['target_image_tag'])
+        dockefile_instructions = ''
+        dockerfile = dockerfile_from + dockefile_instructions
+
+        print('\nThe below Dockerfile will be used to build a backdoored Docker image.')
+
+        while True:
+            docker_instructions_questions = [
+                {
+                    'type': 'input',
+                    'name': 'instruction',
+                    'message': 'Current Dockerfile:\n----------------\n{}\n----------------\n\nEnter Docker instruction:'.format(dockerfile)
+                }
+            ]         
+
+            docker_instructions_answers = prompt(docker_instructions_questions)
+            instructions.append(docker_instructions_answers['instruction'])
+            dockefile_instructions = '\n'.join(instructions)
+            dockerfile = dockerfile_from + dockefile_instructions
+
+            if docker_instructions_answers['instruction']:
+                continue
+
+            print('Review:')
+            print(tabulate({'Dockerfile': [dockerfile]}, headers="keys", tablefmt='orgtbl'), '\n')
+
+            review_questions = [
+                {
+                    'type': 'confirm',
+                    'name': 'build',
+                    'message': 'Would you like to build a Docker image from above Dockerfile?',
+                    'default': True,
+                }
+            ]
+
+            review_answers = prompt(review_questions)
+
+            if review_answers.get('build'):
+                break
+        
+        answers.update({
+            'dockerfile': dockerfile
+        })        
 
         return answers
 
