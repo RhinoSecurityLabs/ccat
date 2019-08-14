@@ -18,7 +18,12 @@ module_info = {
 
 
 def get_dockerfile_like_obj(target_image, injection):
+    # Doing below 2 steps b/c of some weird str issue
+    injection = injection.split('\n')
+    injection = injection[0].replace('\\n','\n')
+    
     dockerfile = 'FROM {}\n{}'.format(target_image, injection)
+    
     return BytesIO(dockerfile.encode('utf-8'))
 
 
@@ -38,7 +43,7 @@ def main(args):
     docker_client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
 
     try:
-        docker_build_response = docker_build(docker_client, target_image, injected_image, args['injection'])
+        docker_build_response = docker_build(docker_client, target_image, injected_image, "" + args['injection'])
 
         out = 'Built {} and injected'.format(docker_build_response)
         print(out)
