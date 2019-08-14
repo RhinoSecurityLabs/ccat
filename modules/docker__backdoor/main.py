@@ -26,11 +26,13 @@ def get_dockerfile_like_obj(target_image, injection):
     
     return BytesIO(dockerfile.encode('utf-8'))
 
-
+def docker_build_dockerfile(docker_client, dockerfile, build_tag):
+    docker_fileobj = BytesIO(dockerfile.encode('utf-8'))
+    return docker_client.images.build(fileobj=docker_fileobj, rm=True, tag=build_tag)
+    
 def docker_build(docker_client, target_image, injected_image, injection):
     docker_fileobj=get_dockerfile_like_obj(target_image, injection)
     return docker_client.images.build(fileobj=docker_fileobj, rm=True, tag=injected_image)
-
 
 def main(args):
     data  = {
@@ -43,16 +45,19 @@ def main(args):
     docker_client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
 
     try:
-        docker_build_response = docker_build(docker_client, target_image, injected_image, "" + args['injection'])
+        if args.get('dockerfile'):
+            docker_build_response = docker_build_dockerfile(docker_client, args.get('dockerfile'), injected_image)
+        else:
+            docker_build_response = docker_build(docker_client, target_image, injected_image, "" + args['injection'])
 
-        out = 'Built {} and injected'.format(docker_build_response)
+        out = 'Built {}'.format(docker_build_response)
         print(out)
 
         data['payload'].update({
             'repository_uri': args['repository_uri'],
             'target_image_tag': args['target_image_tag'],
             'build_image_tag': args['build_image_tag'],
-            'injection': args['injection']
+            'dockerfile': args['dockerfile']
         })
         data['count'] = 1
         
@@ -63,7 +68,7 @@ def main(args):
 
 
 def summary(data):
-    out = '{} Images injected'.format(data['count'])
+    out = '{} Images built'.format(data['count'])
     return out
 
 
