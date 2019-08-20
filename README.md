@@ -37,6 +37,15 @@ Use CCAT's Docker Image
 The first time CCAT is launched, you will be prompted to configure your AWS CLI profile. This profile will be used to run the related AWS modules.
 
 ### Example Usage
+
+Below is an example scenario to demonstrate the usage of CCAT. 
+
+Starting with compromised AWS credentials, the attacker enumerates and explores ECR repositories. Then, the attack found that they use NGINX image and pulled that image from ECR. Furthermore, the attacker created a reverse shell backdoor into the target image. Finally, the attacker pushed the backdoored image to ECR.
+
+#### Exploitation Route:
+![CCAT Scenario Diagram](/docs/images/ccat_scenario_diagram.png)
+
+#### Exploitation Walkthrough Video:
 [![CCAT](docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
 
 ## Roadmap
