@@ -40,7 +40,7 @@ The first time CCAT is launched, you will be prompted to configure your AWS CLI 
 
 Below is an example scenario to demonstrate the usage of CCAT. 
 
-Starting with compromised AWS credentials, the attacker enumerates and explores ECR repositories. Then, the attack found that they use NGINX image and pulled that image from ECR. Furthermore, the attacker created a reverse shell backdoor into the target image. Finally, the attacker pushed the backdoored image to ECR.
+Starting with compromised AWS credentials, the attacker enumerates and explores ECR repositories. Then, the attacker found that they use NGINX Docker image and pulled that Docker image from ECR. Furthermore, the attacker creates a reverse shell backdoor into the target Docker image. Finally, the attacker pushes the backdoored Docker image to ECR.
 
 #### Exploitation Route:
 ![CCAT Scenario Diagram](/docs/images/ccat_scenario_diagram.png)
