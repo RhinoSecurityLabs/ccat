@@ -46,21 +46,23 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
 #### Exploitation Route Walkthrough with CCAT:
 
-1. The attacker explores the AWS enviroment and discovers they are able to list ECR reposotieries using compromised AWS credentianls.
+> If you prefer a video walkthrough, you can find a link to video below this section.
 
-    * Enumrate ECR reposotieries
+1. The attacker explores the AWS enviroment and discovers they are able to list ECR repositories using compromised AWS credentianls.
+
+    * Enumrate ECR repositories
       
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_enum_ecr.png)
 
-    * Configure AWS CLI Profile
+      * Configure AWS CLI Profile
 
-      > The first time CCAT is launched, the attacker will be prompted to configure their AWS CLI profile. This profile will be used to run the related AWS attack modules.
-      
-      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_aws_profile_configure_1.png)
+        > The first time CCAT is launched, the attacker will be prompted to configure their AWS CLI profile. This profile will be used to run the related AWS attack modules.
+        
+        ![CCAT Scenario Diagram](/docs/images/scenario/ccat_aws_profile_configure_1.png)
 
-    * Then the attacker selects target AWS regions
-      
-      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_enum_repos_regions.png)
+      * Then the attacker selects target AWS regions
+        
+        ![CCAT Scenario Diagram](/docs/images/scenario/ccat_enum_repos_regions.png)
 
     * Then the attacker lists enumrated ECR repositories with simple table format
       
@@ -74,13 +76,13 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_menu.png)
 
-    * Then there are two options to pull from ECR reposototies so the attacker chooses a single repository with multiple tags option 
-    
-      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_options.png)
-    
-    * Then the attacker will be promoted to provide AWS region, ECR repository URI, repository tags
-    
-      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_single_repo.png)
+      * Then there are two options to pull from ECR repositories so the attacker chooses a single repository with multiple tags option 
+      
+        ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_options.png)
+      
+      * Then the attacker will be promoted to provide AWS region, ECR repository URI, repository tags
+      
+        ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_single_repo.png)
 
 3. The attacker decides to create a reverse shell backdoor into the pulled NGINX Docker image.    
     
@@ -94,19 +96,19 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
       ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_menu.png)
     
-    * Then the attacker will be promoted to provide repository name, tag and new build tag  
+      * Then the attacker will be promoted to provide repository name, tag and new build tag  
 
-      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_repo_info.png)
-    
-    * Then the attacker generates a Dockerfile, adds reverse shell configuration, and overwrites the default CMD command
+        ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_repo_info.png)
+      
+      * Then the attacker generates a Dockerfile, adds reverse shell configuration, and overwrites the default CMD command
 
-      > "CMD sets default command and/or parameters, which can be overwritten from command line when docker container runs."
+        > "CMD sets default command and/or parameters, which can be overwritten from command line when docker container runs."
 
-      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile.png)
-    
-    * Then the attacker reviews a Dockerfile and builds new backdoored NGINX Docker image
+        ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile.png)
+      
+      * Then the attacker reviews a Dockerfile and builds new backdoored NGINX Docker image
 
-      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile_review_build.png)
+        ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile_review_build.png)
 
     * Then the attacker tests the backdoored Docker image 
 
@@ -122,8 +124,25 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
           ![CCAT Scenario Diagram](/docs/images/scenario/reverse_shell_test_listener.png)
 
+4. Finally, the attacker pushes the backdoored Docker image to ECR.
 
-#### Exploitation Walkthrough Video:
+      * Check AWS Web Console BEFORE pushing the backdoored Docker image
+
+        ![CCAT Scenario Diagram](/docs/images/scenario/ecr_push_repo_before.png)
+      
+      * Push the backdoored Docker image
+
+        ![CCAT Scenario Diagram](/docs/images/scenario/ccat_push_menu.png)
+      
+        * The attacker will be promoted to provide AWS region, ECR repository URI and repository tag
+
+          ![CCAT Scenario Diagram](/docs/images/scenario/ccat_push_repo_info.png)
+
+      * Check AWS Web Console AFTER pushing the backdoored Docker image
+
+        ![CCAT Scenario Diagram](/docs/images/scenario/ccat_push_repo_after.png)
+
+#### Exploitation Route Walkthrough Video with CCAT:
 [![CCAT](docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
 
 ## Roadmap
