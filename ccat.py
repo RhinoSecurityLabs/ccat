@@ -180,7 +180,7 @@ class AWS(object):
 
     # There could be a problem when printing 1000s of ECR repos
     def print_ecr_repos(self):
-        headers = ['Repo Name', 'Repo Uri', 'Tags', 'Region']
+        headers = ['Repo Name', 'Repo Uri', 'Latest Tag', 'Number of Tags','Region']
         rows = []
 
         if self.data.get('ecr_repos') and self.data.get('ecr_repos').get('count') > 0:
@@ -190,13 +190,21 @@ class AWS(object):
                     row = []
                     row.append(repo['repositoryName'])
                     row.append(repo['repositoryUri'])
-                    tags = []
-                    for image_id in repo['image_ids']:
-                        if 'imageTag' in image_id:
-                            tags.append(image_id['imageTag'])
-                    row.append(tags)
+                    # tags = []
+                    tag_latest = ''
+                    if repo.get('image_ids'):
+                        for image_id in repo.get('image_ids'):
+                            if 'imageTag' in image_id:
+                                tag_latest = image_id['imageTag']
+                                # tags.append(image_id['imageTag'])
+                                break
+                    # row.append(tags)
+                    row.append(tag_latest)
+                    if repo.get('image_ids'):
+                        row.append(len(repo.get('image_ids')))
+                    else:
+                        row.append(0)
                     row.append(region)
-
                     rows.append(row)
 
         print(tabulate(rows, headers=headers,  tablefmt='orgtbl'), '\n')            
