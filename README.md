@@ -108,11 +108,6 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
       ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile_review_build.png)
 
-
-    * Then the attacker reviews a Dockerfile and builds new backdoored NGINX Docker image
-
-      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile_review_build.png)
-
     * Then the attacker tests the backdoored Docker image 
 
         * Run a backdoored container
