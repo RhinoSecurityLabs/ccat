@@ -34,7 +34,6 @@ Use CCAT's Docker Image
 ```
 
 ## Getting Started
-The first time CCAT is launched, you will be prompted to configure your AWS CLI profile. This profile will be used to run the related AWS modules.
 
 ### Example Usage
 
@@ -44,6 +43,32 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
 #### Exploitation Route:
 ![CCAT Scenario Diagram](/docs/images/ccat_scenario_diagram.png)
+
+#### Exploitation Route Walkthrough:
+
+1. The attacker explores the AWS enviroment and discovers they are able to list ECR reposotieries with CCAT using compromised AWS credentianls.
+
+    * Enumrate ECR reposotieries
+      
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_enum_ecr.png)
+
+    * Configure AWS CLI Profile
+
+      > The first time CCAT is launched, you will be prompted to configure your AWS CLI profile. This profile will be used to run the related AWS modules.
+      
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_aws_profile_configure_1.png)
+
+    * Select AWS regions
+      
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_enum_repos_regions.png)
+
+    * List enumrated ECR reposotieries
+      
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_list_repos_1.png)
+      
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_list_repos_2.png)
+
+2. 
 
 #### Exploitation Walkthrough Video:
 [![CCAT](docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
