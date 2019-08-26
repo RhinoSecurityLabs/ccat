@@ -44,9 +44,9 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 #### Exploitation Route:
 ![CCAT Scenario Diagram](/docs/images/ccat_scenario_diagram.png)
 
-#### Exploitation Route Walkthrough:
+#### Exploitation Route Walkthrough with CCAT:
 
-1. The attacker explores the AWS enviroment and discovers they are able to list ECR reposotieries with CCAT using compromised AWS credentianls.
+1. The attacker explores the AWS enviroment and discovers they are able to list ECR reposotieries using compromised AWS credentianls.
 
     * Enumrate ECR reposotieries
       
@@ -54,15 +54,15 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
     * Configure AWS CLI Profile
 
-      > The first time CCAT is launched, you will be prompted to configure your AWS CLI profile. This profile will be used to run the related AWS modules.
+      > The first time CCAT is launched, the attacker will be prompted to configure their AWS CLI profile. This profile will be used to run the related AWS attack modules.
       
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_aws_profile_configure_1.png)
 
-    * Select AWS regions
+    * Then the attacker selects target AWS regions
       
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_enum_repos_regions.png)
 
-    * List enumrated ECR reposotieries
+    * Then the attacker lists enumrated ECR repositories with simple table format
       
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_list_repos_1.png)
       
@@ -74,11 +74,11 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_menu.png)
 
-    * There are two options to pull from ECR reposototies. We will choice single reposotiry with multiple tags option. 
+    * Then there are two options to pull from ECR reposototies so the attacker chooses a single repository with multiple tags option 
     
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_options.png)
     
-    * You will be promoted to provide AWS region, ECR repository URI, repository tags to pull a repository from ECR.
+    * Then the attacker will be promoted to provide AWS region, ECR repository URI, repository tags
     
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_single_repo.png)
       
