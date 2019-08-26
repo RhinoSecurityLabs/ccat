@@ -81,8 +81,52 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
     * Then the attacker will be promoted to provide AWS region, ECR repository URI, repository tags
     
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_single_repo.png)
+
+3. The attacker decides to create a reverse shell backdoor into the pulled NGINX Docker image.    
+    
+    * The attacker starts a listener for reverse shell
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/reverse_shell_listener.png)
+    
+    * Then the attacker creates a reverse shell backdoor
+
+      > This module generates a Dockerfile on the fly and builds new Docker image.
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_menu.png)
+    
+    * Then the attacker will be promoted to provide repository name, tag and new build tag  
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_repo_info.png)
+    
+    * Then the attacker generates a Dockerfile, adds reverse shell configuration, and overwrites the default CMD command
+
+      > "CMD sets default command and/or parameters, which can be overwritten from command line when docker container runs."
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile.png)
+    
+    * Then the attacker reviews a Dockerfile and builds new backdoored NGINX Docker image
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile_review_build.png)
+
+
+    * Then the attacker reviews a Dockerfile and builds new backdoored NGINX Docker image
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/docker_backdoor_dockerfile_review_build.png)
+
+    * Then the attacker tests the backdoored Docker image 
+
+        * Run a backdoored container
       
-      
+          ![CCAT Scenario Diagram](/docs/images/scenario/reverse_shell_test_run_container.png)
+        
+        * Test NGINX server
+
+          ![CCAT Scenario Diagram](/docs/images/scenario/reverse_shell_test_nginx_part.png)
+
+        * Test reverse shell backdoor
+
+          ![CCAT Scenario Diagram](/docs/images/scenario/reverse_shell_test_listener.png)
+
 
 #### Exploitation Walkthrough Video:
 [![CCAT](docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
