@@ -3,7 +3,7 @@
 
 _Cloud Container Attack Tool (CCAT) is a tool for testing security of container environments._
 
-![Image of CCAT Screenshot](docs/images/ccat_main_menu.png)
+![Image of CCAT Screenshot](https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_main_menu.png)
 
 ## Requirements
 * Python 3.5+ is required.
