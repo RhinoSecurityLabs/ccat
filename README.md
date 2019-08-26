@@ -68,7 +68,21 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
       
       ![CCAT Scenario Diagram](/docs/images/scenario/ccat_list_repos_2.png)
 
-2. 
+2. The attacker finds that they use the NGINX Docker image and pulls that Docker image from ECR.
+    
+    * Pull ECR repository
+
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_menu.png)
+
+    * There are two options to pull from ECR reposototies. We will choice single reposotiry with multiple tags option. 
+    
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_repo_options.png)
+    
+    * You will be promoted to provide AWS region, ECR repository URI, repository tags to pull a repository from ECR.
+    
+      ![CCAT Scenario Diagram](/docs/images/scenario/ccat_pull_single_repo.png)
+      
+      
 
 #### Exploitation Walkthrough Video:
 [![CCAT](docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
