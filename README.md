@@ -44,14 +44,11 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 ### Exploitation Route:
 <img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_scenario_diagram.png" width="1000"/>
 
-### VIDEO Exploitation Route Walkthrough with CCAT:
-<a href="https://youtu.be/12zEXfCxIrk" target="_blank"><img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/youtube_video_img.png" width="1000"/></a>
+* ### VIDEO Exploitation Route Walkthrough with CCAT:
+  <a href="https://youtu.be/12zEXfCxIrk" target="_blank"><img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/youtube_video_img.png" width="1000"/></a>
 
-
-
-
-### Exploitation Route Walkthrough with CCAT:
-[Visit Step by Step Scenario Page.](/docs/SCENARIO_README.md)
+* ### Exploitation Route Walkthrough with CCAT:
+  [Visit Step by Step Scenario Page.](/docs/SCENARIO_README.md)
 
 ## Roadmap
 * Container Escape Features
@@ -62,7 +59,6 @@ Starting with compromised AWS credentials, the attacker enumerates and explores 
 * OpenShift Container Related Attack Features
 * IBM Cloud Container Related Attack Features
 * Alibaba Cloud Container Related Attack Features
-    
 
 ## Disclaimer
 * CCAT is tool that comes with absolutely no warranties whatsoever. By using CCAT, you take full responsibility for any and all outcomes that result.
