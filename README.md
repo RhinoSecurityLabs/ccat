@@ -5,6 +5,16 @@ _Cloud Container Attack Tool (CCAT) is a tool for testing security of container 
 
 <img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_main_menu.png" width="1000"/>
 
+## Quick reference
+- **Where to get help**:
+[the Pacu/CloudGoat/CCAT Community Slack](https://join.slack.com/t/pacu-cloudgoat/shared_invite/enQtNDE3OTk0MjA3NTA2LTRmOTVmZjEyYjIzOTYxMGJmZDc4ZDVkOGU3ZmJlOWZhNzdkYWQ2ZmQxNTFjZThjMmJlMDFmMTU4NzUwMDM2NmY), or [Stack Overflow](https://stackoverflow.com/search?tab=newest&q=ccat)
+
+- **Where to file issues**:
+[https://github.com/RhinoSecurityLabs/ccat/issues](https://github.com/RhinoSecurityLabs/ccat/issues)
+
+- **Maintained by**:
+[the Rhino Assessment Team](https://github.com/RhinoSecurityLabs/ccat)
+
 ## Requirements
 * Python 3.5+ is required.
 * Docker is required. Note: CCAT is tested with Docker Engine 19.03.1 version.
