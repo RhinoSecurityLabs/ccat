@@ -3,7 +3,7 @@
 
 _Cloud Container Attack Tool (CCAT) is a tool for testing security of container environments._
 
-![Image of CCAT Screenshot](https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_main_menu.png)
+<img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_main_menu.png" width="1000"/>
 
 ## Requirements
 * Python 3.5+ is required.
@@ -42,10 +42,13 @@ Below is an example scenario to demonstrate the usage of CCAT.
 Starting with compromised AWS credentials, the attacker enumerates and explores ECR repositories. Then, the attacker found that they use NGINX Docker image and pulled that Docker image from ECR. Furthermore, the attacker creates a reverse shell backdoor into the target Docker image. Finally, the attacker pushes the backdoored Docker image to ECR.
 
 ### Exploitation Route:
-![CCAT](https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_scenario_diagram.png)
+<img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/ccat_scenario_diagram.png" width="1000"/>
 
 ### VIDEO Exploitation Route Walkthrough with CCAT:
-[![CCAT](https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/youtube_video_img.png)](https://youtu.be/12zEXfCxIrk "CCAT")
+<a href="https://youtu.be/12zEXfCxIrk" target="_blank"><img src="https://raw.githubusercontent.com/RhinoSecurityLabs/ccat/master/docs/images/youtube_video_img.png" width="1000"/></a>
+
+
+
 
 ### Exploitation Route Walkthrough with CCAT:
 [Visit Step by Step Scenario Page.](/docs/SCENARIO_README.md)
