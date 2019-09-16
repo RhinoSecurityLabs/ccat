@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import sys
+import pathlib
 
 
 import boto3
@@ -9,19 +10,31 @@ from pyfiglet import figlet_format
 from PyInquirer import (prompt, Separator, style_from_dict, Token)
 from tabulate import tabulate
 
-
+# AWS
 import modules.ecr__enum_repos.main as ecr__enum_repos
 import modules.ecr__pull_repos.main as ecr__pull_repos
 import modules.docker__backdoor.main as docker__backdoor
 import modules.ecr__push_repos.main as ecr__push_repos
 
+# GCP
+import modules.gcr__enum_repos.main as gcr__enum_repos
 
+# AWS words
 ENUMERATE_ECR = 'Enumerate ECR'
 PULL_ECR_REPOS = 'Pull Repos from ECR'
 PUSH_ECR_REPOS = 'Push Repos to ECR'
-DOCKER_BACKDOOR = 'Docker Backdoor'
 LIST_ECR_REPOS = 'List Enumerated ECR Repos'
 SWAP_AWS_PROFILE = 'Swap AWS Profile'
+
+# GCP words
+ENUMERATE_GCR = 'Enumerate GCR'
+PULL_GCR_REPOS = 'Pull Repos from GCR'
+PUSH_GCR_REPOS = 'Push Repos to GCR'
+LIST_GCR_REPOS = 'List Enumerated GCR Repos'
+SWAP_SERVICE_ACCOUNT = 'Swap Service Account'
+
+# Docker words
+DOCKER_BACKDOOR = 'Docker Backdoor'
 
 
 custom_style = style_from_dict({
@@ -35,13 +48,16 @@ custom_style = style_from_dict({
     Token.Question: '',
 })
 
+
 class CLI(object):
     def __init__(self):
         aws = AWS()
+        gcp = GCP()
         docker = Docker()
 
         self.extentions = {
             'aws': aws,
+            'gcp': gcp,
             'docker': docker
         }
 
@@ -83,6 +99,7 @@ class CLI(object):
             print('MODULE SUMMARY:\n\n{}\n'.format(summary.strip('\n')))  
 
     def run_module(self, answers):
+        # AWS
         if ENUMERATE_ECR in answers['main_menu']:
             cli_answers = self.extentions['aws'].ask_ecr_enum_repos()
             self.print_module_running(ecr__enum_repos.module_info['name'])
@@ -105,14 +122,26 @@ class CLI(object):
             data = ecr__push_repos.main(cli_answers)
             self.print_module_summary(data, ecr__push_repos)
 
+        elif SWAP_AWS_PROFILE in answers['main_menu']:
+            self.extentions['aws'].swap_profile()
+        
+        # GCP
+        elif ENUMERATE_GCR in answers['main_menu']:
+            cli_answers = self.extentions['gcp'].ask_gcr_enum_repos()
+            self.print_module_running(gcr__enum_repos.module_info['name'])
+            data = gcr__enum_repos.main(cli_answers)
+            self.extentions['gcp'].data.update({'gcr_repos': data})
+            self.print_module_summary(data, ecr__enum_repos)
+
+        elif LIST_GCR_REPOS in answers['main_menu']:
+            self.extentions['gcp'].print_gcr_repos()
+
+        # Docker
         elif DOCKER_BACKDOOR in answers['main_menu']:
             cli_answers = self.extentions['docker'].ask_docker_backdoor()
             self.print_module_running(docker__backdoor.module_info['name'])
             data = docker__backdoor.main(cli_answers)
             self.print_module_summary(data, docker__backdoor)
-
-        elif SWAP_AWS_PROFILE in answers['main_menu']:
-            self.extentions['aws'].swap_profile()
 
         else:
             self.exit_cli()
@@ -352,6 +381,123 @@ class AWS(object):
         answers.update({
             'aws_cli_profile': self.configuration['profile']
         })
+
+
+class GCP(object):
+    def __init__(self, service_account_json_file_path=None):
+        self.configuration = {
+            'service_account_json_file_path': service_account_json_file_path
+        }
+
+        self.data = {}
+
+    def get_menu_choices_registries(self, gcp_registries=[]):
+        choices = []
+        for registery in gcp_registries:
+            choices.append({
+                'name': registery
+            })
+
+        return choices
+
+    def get_menu(self):
+        return [
+            Separator('= GCP ='),
+            ENUMERATE_GCR,
+            LIST_GCR_REPOS,
+            PULL_GCR_REPOS,
+            PUSH_GCR_REPOS,
+            SWAP_SERVICE_ACCOUNT
+        ]
+
+    def ask_configuration(self):
+        if not self.configuration.get('service_account_json_file_path'):
+            print('Did not find GCP configuration!')
+            
+        questions = [
+            {
+                'type': 'input',
+                'name': 'service_account_json_file_path',
+                'message': 'Enter GCP Service Account json file path',
+                'validate': lambda profile: len(profile) != 0 or 'GCP Service Account can not be empty!'
+            }
+        ]
+
+        while True:
+            answers = prompt(questions)
+
+            # check the existence of service account json file
+            path = pathlib.Path(answers.get('service_account_json_file_path'))
+            if path.exists():
+                break
+            else:
+                print("Service account json file does not exist")
+
+        return answers
+
+    def is_configured(self):
+        return self.configuration['service_account_json_file_path'] is not None
+
+    def set_configuration(self):
+        answers = self.ask_configuration()
+
+        print('Configuring GCP...')    
+        self.configuration.update({
+            'service_account_json_file_path': answers['service_account_json_file_path']
+        })
+
+        print('Successfully configured GCP\n')
+
+    def ask_gcr_enum_repos(self):
+        if self.is_configured() is False:
+            self.set_configuration()
+        
+        gcp_registries = ['gcr.io','us.gcr.io','eu.gcr.io','asia.gcr.io']
+
+        questions = [
+            {
+                'type': 'checkbox',
+                'name': 'gcp_registries',
+                'message': 'Select GCP registeries to enumerate',
+                'choices': self.get_menu_choices_registries(gcp_registries)
+            }
+        ]
+
+        answers = prompt(questions)
+        self.append_configuration(answers)
+
+        return answers
+
+    def append_configuration(self, answers):
+        answers.update({
+            'service_account_json_file_path': self.configuration['service_account_json_file_path']
+        })
+
+    def print_gcr_repos(self):
+        print(json.dumps(self.data, indent=4, default=str))
+        headers = ['Repo Name', 'Repo Uri', 'Latest Tag', 'Number of Tags', 'Registry']
+        rows = []
+
+        if self.data.get('gcr_repos') and self.data.get('gcr_repos').get('count') > 0:
+            for registry in self.data['gcr_repos']['payload']['gcp_registries']:
+                repos = self.data['gcr_repos']['payload']['repositories_by_registry'][registry]
+                for repo in repos:
+                    row = []
+                    row.append(repo['repositoryName'])
+                    row.append(repo['repositoryUri'])
+                    
+                    tag_latest = ''
+                    if repo.get('tags'):
+                        tag_latest = repo.get('tags')[0]
+                        row.append(tag_latest)
+                        row.append(len(repo.get('tags')))
+                    else:
+                        row.append(0)
+
+                    row.append(registry)
+                    rows.append(row)
+
+        print(tabulate(rows, headers=headers,  tablefmt='orgtbl'), '\n') 
 
 
 class Docker(object):
