@@ -76,7 +76,7 @@ def enum_repos(service_account_json_file_path, registries, data):
                     if len(tags) != 0:
                         repos_temp.append({
                             'repositoryName': repo,
-                            'repositoryUri': 'https://{}/{}'.format(registry,repo),
+                            'repositoryUri': '{}/{}'.format(registry,repo),
                             'tags': tags,
                         })
 
