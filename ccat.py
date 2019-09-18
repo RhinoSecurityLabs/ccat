@@ -13,12 +13,14 @@ from tabulate import tabulate
 # AWS
 import modules.ecr__enum_repos.main as ecr__enum_repos
 import modules.ecr__pull_repos.main as ecr__pull_repos
-import modules.docker__backdoor.main as docker__backdoor
 import modules.ecr__push_repos.main as ecr__push_repos
 
 # GCP
 import modules.gcr__enum_repos.main as gcr__enum_repos
 import modules.gcr__pull_repos.main as gcr__pull_repos
+
+# Docker
+import modules.docker__backdoor.main as docker__backdoor
 
 # AWS words
 ENUMERATE_ECR = 'Enumerate ECR'
