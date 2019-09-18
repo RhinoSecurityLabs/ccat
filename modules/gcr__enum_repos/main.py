@@ -43,14 +43,33 @@ def get_sa_key(path):
     return sa_key_json
 
 
+def docker_configure_username_password(args):
+    if args.get('service_account_json_file_path'):
+        service_account_json_file_path = args.get('service_account_json_file_path')
+        docker_password = get_sa_key(service_account_json_file_path)
+        args.update({
+            'docker_username': DOCKER_USERNAME_JSON_KEY,
+            'docker_password': docker_password
+        })
+    elif args.get('access_token'):
+        args.update({
+            'docker_username': DOCKER_USERNAME_ACCESS_TOKEN,
+            'docker_password': args.get('access_token')
+        })
+
+
 def save_to_file(data):
     os.makedirs(SAVE_TO_FILE_DIRECTORY, exist_ok=True)
     with open(SAVE_TO_FILE_PATH, 'w+') as json_file:
         json.dump(data, json_file, indent=4, default=str)  
 
 
-def enum_repos(docker_username, docker_password, registries, data):
+def enum_repos(args, data):
     total = 0
+
+    docker_username = args.get('docker_username')
+    docker_password = args.get('docker_password')
+    registries = args.get('gcp_registries')
 
     try:
 
@@ -122,13 +141,8 @@ def main(args):
         }
     }
 
-    if args.get('service_account_json_file_path'):
-        service_account_json_file_path = args.get('service_account_json_file_path')
-        docker_password = json.dumps(get_sa_key(service_account_json_file_path))
-        enum_repos(DOCKER_USERNAME_JSON_KEY, docker_password, args.get('gcp_registries'), data)
-    elif args.get('access_token'):
-        enum_repos(DOCKER_USERNAME_ACCESS_TOKEN, args.get('access_token'), args.get('gcp_registries'), data)
-
+    docker_configure_username_password(args)
+    enum_repos(args, data)
     save_to_file(data)
 
     return data
