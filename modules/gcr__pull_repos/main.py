@@ -43,25 +43,36 @@ def docker_login(docker_client ,username, password, docker_registry):
     login_response = docker_client.login(username, password, registry=docker_registry)
     return login_response
 
-def docker_pull_all(args, data):
+
+def docker_pull(docker_client,repo):
+    docker_pull_response = docker_client.images.pull(repo)
+    out = 'Pulled {}'.format(docker_pull_response)
+    print(out)
+
+
+def gcr_pull_all(args, data):
     try:
         docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
         docker_password = get_sa_key(args.get('service_account_json_file_path'))
         
         count = 0
+        registry_previous = ''
         for repo in args.get('repositories'):
-            try:
-                docker_registry = get_registry(repo)
-                docker_login_response = docker_login(docker_client, DOCKER_USERNAME, docker_password, docker_registry)
-                if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
-                    for line in docker_client.images.pull(repo, stream=True)
-                        print(json.dumps(json.loads(line), indent=4, default=str))
-                    
+            try:                
+                registry_current = repo.split('/')[0]
+
+                if registry_previous != registry_current:
+                    docker_registry = get_registry(repo)
+                    docker_login_response = docker_login(docker_client, DOCKER_USERNAME, docker_password, docker_registry)
+                
+                if registry_previous == registry_current or DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
+                    docker_pull(docker_client, repo)
                     data['payload']['repositories'].append(repo)
                     count += 1
-                    print(out)
                 else:
                     print('login failed')
+
+                registry_previous = registry_current
             except Exception as e:
                 print(e, file=sys.stderr)
 
@@ -72,12 +83,7 @@ def docker_pull_all(args, data):
         print(e, file=sys.stderr)
 
 
-def gcr_pull(docker_client,repo, data):
-        docker_pull_response = docker_client.images.pull(repo)
-        out = 'Pulled {}'.format(docker_pull_response)
-        print(out)
-
-def docker_pull(args, data):
+def gcr_pull(args, data):
     try:
         docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
         docker_password = get_sa_key(args.get('service_account_json_file_path'))
@@ -86,26 +92,29 @@ def docker_pull(args, data):
 
         if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
             count = 0
-            if args.get('repository_tags') is not None and len(args.get('repository_tags')) >= 1:
+            if len(args.get('repository_tags')) >= 1:
+                # pull provided tags
                 for tag in args.get('repository_tags'):
                     repo = args.get('repositories')[0] + ':' + tag
                     try:
-                        gcr_pull(docker_client, repo, data)
+                        docker_pull(docker_client, repo)
                         data['payload']['repository_tags'].append(tag)
                         count += 1
                     except Exception as e:
-                        print(e, file=sys.stderr)
+                       print(e, file=sys.stderr)
             else:
+                # pull all tags
                 try:
                     repo = args.get('repositories')[0]
-                    gcr_pull(docker_client, repo, data)
+                    docker_pull(docker_client, repo)
                     count += 1
-                 except Exception as e:
+                except Exception as e:
                     print(e, file=sys.stderr)
+        else:
+            print('login failed')
 
         data['count'] = count
         data['payload']['repositories'] = args.get('repositories')
-        data['payload']['registry'] = docker_registry
 
     except Exception as e:
         print(e, file=sys.stderr)
@@ -115,18 +124,20 @@ def main(args):
     data  = {
         'count': 0,
         'payload': {
-            'registry': None,
             'repositories': [],
             'repository_tags': []
         }
     }
     
-    docker_pull(args, data)
+    if len(args.get('repositories')) > 1:
+        gcr_pull_all(args, data)
+    else:
+        gcr_pull(args, data)
 
     return data
 
 
-def set_args(service_account_json_file_path, repositories, repository_tags=None):
+def set_args(service_account_json_file_path, repositories, repository_tags=[]):
     # check the existence of service account json file
     path = pathlib.Path(service_account_json_file_path)
     if path.exists() is False:
