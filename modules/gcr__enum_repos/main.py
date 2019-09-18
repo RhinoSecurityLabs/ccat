@@ -16,7 +16,8 @@ SAVE_TO_FILE_DIRECTORY = './data'
 SAVE_TO_FILE_PATH = '{}/gcr__enum_repos_data.json'.format(SAVE_TO_FILE_DIRECTORY)
 DOCKER_BASE_URL = 'unix:///var/run/docker.sock'
 DOCKER_LOGIN_SUCCEEDED = 'Login Succeeded'
-DOCKER_USERNAME = '_json_key'
+DOCKER_USERNAME_JSON_KEY = '_json_key'
+DOCKER_USERNAME_ACCESS_TOKEN = 'oauth2accesstoken'
 DOCKER_REGISTRY_REPOS_URL = 'https://{}/v2/_catalog'
 DOCKER_REGISTRY_REPOS_TAGS_URL = 'https://{}/v2/{}/tags/list'
 
@@ -48,16 +49,18 @@ def save_to_file(data):
         json.dump(data, json_file, indent=4, default=str)  
 
 
-def enum_repos(service_account_json_file_path, registries, data):
+def enum_repos(docker_username, docker_password, registries, data):
     total = 0
 
     try:
-        docker_password = json.dumps(get_sa_key(service_account_json_file_path))
 
         for registry in registries:
             url_repos = DOCKER_REGISTRY_REPOS_URL.format(registry)
-            url_repos_response = requests.get(url_repos, auth=(DOCKER_USERNAME, docker_password))
-        
+            url_repos_response = requests.get(url_repos, auth=(docker_username, docker_password))
+            if(url_repos_response.status_code == 401):
+                print('401 Unauthorized')
+                continue
+            
             repos = json.loads(url_repos_response.text).get('repositories')
             repos_temp = []
 
@@ -70,7 +73,7 @@ def enum_repos(service_account_json_file_path, registries, data):
                 # append tags
                 for repo in repos:
                     url_repo_tags = DOCKER_REGISTRY_REPOS_TAGS_URL.format(registry, repo)
-                    url_repo_tags_reponse = requests.get(url_repo_tags, auth=(DOCKER_USERNAME, docker_password))
+                    url_repo_tags_reponse = requests.get(url_repo_tags, auth=(docker_username, docker_password))
                     tags = json.loads(url_repo_tags_reponse.text).get('tags')
                     
                     if len(tags) != 0:
@@ -91,6 +94,25 @@ def enum_repos(service_account_json_file_path, registries, data):
     data['count'] = total
 
 
+#python main.py path_to_service_account_json_file
+def set_args(service_account_json_file_path=None, access_token=None, gcp_registries=[]):
+
+    if service_account_json_file_path is not None:
+        # check the existence of service account json file
+        path = pathlib.Path(service_account_json_file_path)
+        if path.exists() is False:
+            print("Service account json file does not exist")
+            sys.exit(1)
+
+    args = {
+        'service_account_json_file_path': service_account_json_file_path,
+        'access_token': access_token,
+        'gcp_registries': gcp_registries
+    }
+
+    return args
+
+
 def main(args):
     data  = {
         'count': 0,
@@ -99,10 +121,15 @@ def main(args):
             'repositories_by_registry': {}
         }
     }
-    
-    enum_repos(args.get('service_account_json_file_path'), args.get('gcp_registries'),data)
+
+    if args.get('service_account_json_file_path'):
+        service_account_json_file_path = args.get('service_account_json_file_path')
+        docker_password = json.dumps(get_sa_key(service_account_json_file_path))
+        enum_repos(DOCKER_USERNAME_JSON_KEY, docker_password, args.get('gcp_registries'), data)
+    elif args.get('access_token'):
+        enum_repos(DOCKER_USERNAME_ACCESS_TOKEN, args.get('access_token'), args.get('gcp_registries'), data)
+
     save_to_file(data)
-    # print(json.dumps(data, indent=4, default=str))
 
     return data
 
@@ -112,21 +139,6 @@ def summary(data):
     out += '{} GCR Repositories Enumerated\n'.format(data['count'])
     out += 'GCR recources saved under the {} path.\n'.format(SAVE_TO_FILE_PATH)
     return out
-
-
-#python main.py path_to_service_account_json_file
-def set_args(service_account_json_file_path):
-    # check the existence of service account json file
-    path = pathlib.Path(service_account_json_file_path)
-    if path.exists() is False:
-        print("Service account json file does not exist")
-        sys.exit(1)
-
-    args = {
-        'service_account_json_file_path': service_account_json_file_path
-    }
-
-    return args
 
 
 if __name__ == "__main__":
