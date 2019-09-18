@@ -35,7 +35,7 @@ ENUMERATE_GCR = 'Enumerate GCR'
 PULL_GCR_REPOS = 'Pull Repos from GCR'
 PUSH_GCR_REPOS = 'Push Repos to GCR'
 LIST_GCR_REPOS = 'List Enumerated GCR Repos'
-SWAP_SERVICE_ACCOUNT = 'Swap Service Account'
+SWAP_SERVICE_ACCOUNT = 'Swap GCP Credentials'
 
 # Docker words
 DOCKER_BACKDOOR = 'Docker Backdoor'
@@ -403,9 +403,10 @@ class AWS(object):
 
 
 class GCP(object):
-    def __init__(self, service_account_json_file_path=None):
+    def __init__(self, service_account_json_file_path=None, access_token=None):
         self.configuration = {
-            'service_account_json_file_path': service_account_json_file_path
+            'service_account_json_file_path': service_account_json_file_path,
+            'access_token': access_token,
         }
 
         self.data = {}
@@ -435,39 +436,65 @@ class GCP(object):
         self.set_configuration()
 
     def ask_configuration(self):
-        if not self.configuration.get('service_account_json_file_path'):
+        if not self.configuration.get('service_account_json_file_path') and not self.configuration.get('access_token'):
             print('Did not find GCP configuration!')
-            
+
         questions = [
             {
-                'type': 'input',
-                'name': 'service_account_json_file_path',
-                'message': 'Enter GCP Service Account json file path',
-                'validate': lambda profile: len(profile) != 0 or 'GCP Service Account can not be empty!'
+                'type': 'list',
+                'name': 'creds_choice',
+                'message': 'What GCP credential would you like to setup?',
+                'choices': ['Service Account', 'Access Token']
             }
         ]
 
-        while True:
-            answers = prompt(questions)
+        answers = prompt(questions)
 
-            # check the existence of service account json file
-            path = pathlib.Path(answers.get('service_account_json_file_path'))
-            if path.exists():
-                break
-            else:
-                print("Service account json file does not exist")
+        if answers['creds_choice'] == 'Service Account':
+            # service account
+            questions = [
+                {
+                    'type': 'input',
+                    'name': 'service_account_json_file_path',
+                    'message': 'Enter GCP Service Account json file path',
+                    'validate': lambda profile: len(profile) != 0 or 'GCP Service Account can not be empty!'
+                }
+            ]
+
+            while True:
+                answers = prompt(questions)
+                path = pathlib.Path(answers.get('service_account_json_file_path'))
+                if path.exists():
+                    break
+                else:
+                    print("Service account json file does not exist")
+        else:
+            # access token
+            questions = [
+                {
+                    'type': 'input',
+                    'name': 'access_token',
+                    'message': 'Enter GCP Access Token',
+                    'validate': lambda profile: len(profile) != 0 or 'GCP Access Token can not be empty!'
+                }
+            ]
+
+            answers = prompt(questions)
 
         return answers
 
+
     def is_configured(self):
-        return self.configuration['service_account_json_file_path'] is not None
+        return self.configuration.get('service_account_json_file_path') is not None or self.configuration.get('access_token') is not None
 
     def set_configuration(self):
         answers = self.ask_configuration()
 
         print('Configuring GCP...')    
+    
         self.configuration.update({
-            'service_account_json_file_path': answers['service_account_json_file_path']
+            'service_account_json_file_path': answers.get('service_account_json_file_path'),
+            'access_token': answers.get('access_token')
         })
 
         print('Successfully configured GCP\n')
@@ -572,7 +599,8 @@ class GCP(object):
 
     def append_configuration(self, answers):
         answers.update({
-            'service_account_json_file_path': self.configuration['service_account_json_file_path']
+            'service_account_json_file_path': self.configuration['service_account_json_file_path'],
+            'access_token': self.configuration['access_token']
         })
 
 
