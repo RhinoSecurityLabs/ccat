@@ -537,7 +537,6 @@ class GCP(object):
         })
 
     def print_gcr_repos(self):
-        print(json.dumps(self.data, indent=4, default=str))
         headers = ['Repo Name', 'Repo Uri', 'Latest Tag', 'Number of Tags', 'Registry']
         rows = []
 
