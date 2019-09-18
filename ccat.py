@@ -18,6 +18,7 @@ import modules.ecr__push_repos.main as ecr__push_repos
 
 # GCP
 import modules.gcr__enum_repos.main as gcr__enum_repos
+import modules.gcr__pull_repos.main as gcr__pull_repos
 
 # AWS words
 ENUMERATE_ECR = 'Enumerate ECR'
@@ -131,7 +132,13 @@ class CLI(object):
             self.print_module_running(gcr__enum_repos.module_info['name'])
             data = gcr__enum_repos.main(cli_answers)
             self.extentions['gcp'].data.update({'gcr_repos': data})
-            self.print_module_summary(data, ecr__enum_repos)
+            self.print_module_summary(data, gcr__enum_repos)
+
+        elif PULL_GCR_REPOS in answers['main_menu']:
+            cli_answers = self.extentions['gcp'].ask_gcr_pull_repos()
+            self.print_module_running(gcr__pull_repos.module_info['name'])
+            data = gcr__pull_repos.main(cli_answers)
+            self.print_module_summary(data, gcr__pull_repos)
 
         elif LIST_GCR_REPOS in answers['main_menu']:
             self.extentions['gcp'].print_gcr_repos()
@@ -464,6 +471,62 @@ class GCP(object):
         ]
 
         answers = prompt(questions)
+        self.append_configuration(answers)
+
+        return answers
+
+    def ask_gcr_pull_repos(self):
+        if self.is_configured() is False:
+            self.set_configuration()
+
+        # gcr_pull_all
+        questions = [
+            {
+                'type': 'list',
+                'name': 'gcr_pull_options',
+                'message': 'GCR Pull Options',
+                'choices': [
+                    'Pull all enumerated repos',
+                    'Pull single repo with multiple tags'
+                ]
+            }
+        ]
+
+        answers = prompt(questions)
+
+        if 'Pull all enumerated repos' == answers.get('gcr_pull_options'):
+            if self.data.get('gcr_repos') and self.data.get('gcr_repos').get('payload'):
+                gcr_repos = []
+                repositories_by_registry = self.data.get('gcr_repos').get('payload').get('repositories_by_registry')
+                for repos in repositories_by_registry.values():
+                    for repo in repos:
+                        gcr_repos.append(repo.get('repositoryUri'))
+
+                answers.update({
+                    'repositories': gcr_repos
+                })
+        else:
+            questions = [
+                {
+                    'type': 'input',
+                    'name': 'repositories',
+                    'message': 'Enter GCP GCR repository URI'
+                },
+                {
+                    'type': 'input',
+                    'name': 'repository_tags',
+                    'message': 'Enter GCP GCR repository tags seperated by comma'
+                }
+            ]
+
+            answers = prompt(questions)
+
+            # strip(',') remove leading or trailing (,)
+            # replace(' ', '') remove spaces
+            # split by comma to generate a list of tags
+            answers['repository_tags'] = answers['repository_tags'].strip(',').replace(' ', '').split(',')
+            answers['repositories'] = [answers['repositories']] 
+            
         self.append_configuration(answers)
 
         return answers
