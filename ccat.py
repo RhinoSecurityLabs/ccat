@@ -152,6 +152,9 @@ class CLI(object):
             data = gcr__push_repos.main(cli_answers)
             self.print_module_summary(data, gcr__push_repos)
 
+        elif SWAP_SERVICE_ACCOUNT in answers['main_menu']:
+            self.extentions['gcp'].swap_service_account()
+
         # Docker
         elif DOCKER_BACKDOOR in answers['main_menu']:
             cli_answers = self.extentions['docker'].ask_docker_backdoor()
@@ -426,6 +429,11 @@ class GCP(object):
             SWAP_SERVICE_ACCOUNT
         ]
 
+    def swap_service_account(self):
+        if self.configuration.get('service_account_json_file_path'):
+            print('Current Service Account: {}'.format(self.configuration.get('service_account_json_file_path')))
+        self.set_configuration()
+
     def ask_configuration(self):
         if not self.configuration.get('service_account_json_file_path'):
             print('Did not find GCP configuration!')
@@ -566,6 +574,7 @@ class GCP(object):
         answers.update({
             'service_account_json_file_path': self.configuration['service_account_json_file_path']
         })
+
 
     def print_gcr_repos(self):
         headers = ['Repo Name', 'Repo Uri', 'Latest Tag', 'Number of Tags', 'Registry']
