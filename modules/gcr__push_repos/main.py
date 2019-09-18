@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import sys
+import pathlib
 
 
 import fire
@@ -21,7 +22,8 @@ module_info = {
 
 
 DOCKER_LOGIN_SUCCEEDED = 'Login Succeeded'
-DOCKER_USERNAME = '_json_key'
+DOCKER_USERNAME_JSON_KEY = '_json_key'
+DOCKER_USERNAME_ACCESS_TOKEN = 'oauth2accesstoken'
 DOCKER_PUSH_ERROR = 'errorDetail'
 DOCKER_BASE_URL = 'unix:///var/run/docker.sock'
 
@@ -40,6 +42,21 @@ def get_registry(repository_uri):
     return docker_registry
 
 
+def docker_configure_username_password(args):
+    if args.get('service_account_json_file_path'):
+        service_account_json_file_path = args.get('service_account_json_file_path')
+        docker_password = get_sa_key(service_account_json_file_path)
+        args.update({
+            'docker_username': DOCKER_USERNAME_JSON_KEY,
+            'docker_password': docker_password
+        })
+    elif args.get('access_token'):
+        args.update({
+            'docker_username': DOCKER_USERNAME_ACCESS_TOKEN,
+            'docker_password': args.get('access_token')
+        })
+
+
 def docker_login(docker_client ,username, password, docker_registry):
     login_response = docker_client.login(username, password, registry=docker_registry)
     return login_response
@@ -56,17 +73,36 @@ def docker_push(docker_client, image, repository_tag):
     return True
 
 
+def set_args(service_account_json_file_path=None, access_token=None, repository_uri=None, repository_tag=None):
+    if service_account_json_file_path is not None:
+        # check the existence of service account json file
+        path = pathlib.Path(service_account_json_file_path)
+        if path.exists() is False:
+            print("Service account json file does not exist")
+            sys.exit(1)
+
+    args = {
+        'service_account_json_file_path': service_account_json_file_path,
+        'repository_uri': repository_uri,
+        'repository_tag': repository_tag,
+        'access_token': access_token
+    }
+
+    return args
+
+
 def main(args):
     data  = {
         'count': 0,
         'payload': {}
     }
 
+    docker_configure_username_password(args)
+
     try:
         docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
-        docker_password = get_sa_key(args.get('service_account_json_file_path'))
         docker_registry = get_registry(args.get('repository_uri'))
-        docker_login_response = docker_login(docker_client, DOCKER_USERNAME, docker_password, docker_registry)
+        docker_login_response = docker_login(docker_client, args.get('docker_username'), args.get('docker_password'), docker_registry)
         
         if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'): 
             docker_push_response = docker_push(docker_client, args['repository_uri'],args['repository_tag'])
@@ -89,15 +125,6 @@ def summary(data):
     out += 'GCR recources saved in memory database.\n'
     return out
 
-
-def set_args(service_account_json_file_path, repository_uri, repository_tag):
-    args = {
-        'service_account_json_file_path': service_account_json_file_path,
-        'repository_uri': repository_uri,
-        'repository_tag': repository_tag
-    }
-
-    return args
 
 if __name__ == "__main__":
     print('Running module {}...'.format(module_info['name']))
