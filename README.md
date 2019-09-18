@@ -18,7 +18,8 @@ _Cloud Container Attack Tool (CCAT) is a tool for testing security of container 
 ## Requirements
 * Python 3.5+ is required.
 * Docker is required. Note: CCAT is tested with Docker Engine 19.03.1 version.
-* AWS named profile is required.
+* Named profile is required for using AWS functionalities.
+* Service account is required for using GCP functionalities.
 
 ## Installation
 <!-- Install CCAT with pip
