@@ -35,7 +35,7 @@ ENUMERATE_GCR = 'Enumerate GCR'
 PULL_GCR_REPOS = 'Pull Repos from GCR'
 PUSH_GCR_REPOS = 'Push Repos to GCR'
 LIST_GCR_REPOS = 'List Enumerated GCR Repos'
-SWAP_SERVICE_ACCOUNT = 'Swap GCP Credentials'
+SWAP_GCP_CREDS = 'Swap GCP Credentials'
 
 # Docker words
 DOCKER_BACKDOOR = 'Docker Backdoor'
@@ -152,7 +152,7 @@ class CLI(object):
             data = gcr__push_repos.main(cli_answers)
             self.print_module_summary(data, gcr__push_repos)
 
-        elif SWAP_SERVICE_ACCOUNT in answers['main_menu']:
+        elif SWAP_GCP_CREDS in answers['main_menu']:
             self.extentions['gcp'].swap_service_account()
 
         # Docker
@@ -427,7 +427,7 @@ class GCP(object):
             LIST_GCR_REPOS,
             PULL_GCR_REPOS,
             PUSH_GCR_REPOS,
-            SWAP_SERVICE_ACCOUNT
+            SWAP_GCP_CREDS
         ]
 
     def swap_service_account(self):
