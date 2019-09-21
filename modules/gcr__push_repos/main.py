@@ -122,7 +122,7 @@ def main(args):
 def summary(data):
     out = ''
     out += '{} GCR Repositories Pushed\n'.format(data['count'])
-    out += 'GCR recources saved in memory database.\n'
+    out += 'Pushed the image. Check the Container Registery to get an info about the pushed image.\n'
     return out
 
 
