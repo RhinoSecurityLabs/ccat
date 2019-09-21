@@ -174,7 +174,7 @@ def main(args):
 def summary(data):
     out = ''
     out += '{} GCR Repositories Pulled\n'.format(data['count']) 
-    out += 'GCR resources saved and use \'docker images\' command to check the result.\n'
+    out += 'GCR resource saved. Use the \'docker images\' command to check the result.\n'
     return out 
 
 
