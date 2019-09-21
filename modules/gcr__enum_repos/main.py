@@ -40,7 +40,7 @@ def get_sa_key(path):
     with open(path) as json_file:
         sa_key_json = json.load(json_file)
 
-    return sa_key_json
+    return json.dumps(sa_key_json, default=str)
 
 
 def docker_configure_username_password(args):
