@@ -413,9 +413,9 @@ class GCP(object):
 
     def get_menu_choices_registries(self, gcp_registries=[]):
         choices = []
-        for registery in gcp_registries:
+        for registry in gcp_registries:
             choices.append({
-                'name': registery
+                'name': registry
             })
 
         return choices

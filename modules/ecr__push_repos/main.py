@@ -35,7 +35,7 @@ def docker_login(docker_client, username, password, registry):
     return login_response
 
 
-def get_docker_username_password_registery(token):
+def get_docker_username_password_registry(token):
     docker_username, docker_password = base64.b64decode(token['authorizationData'][0]['authorizationToken']).decode().split(':')
     docker_registry = token['authorizationData'][0]['proxyEndpoint']
     return (docker_username, docker_password, docker_registry)
@@ -62,7 +62,7 @@ def main(args):
         docker_client = docker.DockerClient(base_url=DOCKER_BASE_URL)
 
         token = ecr_client.get_authorization_token()
-        docker_username, docker_password, docker_registry = get_docker_username_password_registery(token)
+        docker_username, docker_password, docker_registry = get_docker_username_password_registry(token)
         docker_login_response = docker_login(docker_client,docker_username, docker_password, docker_registry)
         
         if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'): 
