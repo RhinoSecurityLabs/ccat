@@ -106,7 +106,7 @@ def gcr_pull(args, data):
 
         if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
             count = 0
-            if len(args.get('repository_tags')) >= 1:
+            if args.get('repository_tags') and len(args.get('repository_tags')) >= 1:
                 # pull provided tags
                 for tag in args.get('repository_tags'):
                     repo = args.get('repositories')[0] + ':' + tag
@@ -162,7 +162,6 @@ def main(args):
     }
 
     docker_configure_username_password(args)
-
     if len(args.get('repositories')) > 1:
         gcr_pull_all(args, data)
     else:
