@@ -22,10 +22,7 @@ _Cloud Container Attack Tool (CCAT) is a tool for testing security of container 
 * A service account or access token is required for using GCP functionality.
 
 ## Installation
-<!-- Install CCAT with pip
-```
- $ pip install ccat
-``` -->
+> We recommend using the provided Docker image to run CCAT, so that you will not face any difficulty with the required dependencies on your own system.
 
 Install CCAT from source
 
