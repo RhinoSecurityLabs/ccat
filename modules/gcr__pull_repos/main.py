@@ -106,7 +106,7 @@ def gcr_pull(args, data):
 
         if DOCKER_LOGIN_SUCCEEDED == docker_login_response.get('Status'):
             count = 0
-            if args.get('repository_tags') and len(args.get('repository_tags')) >= 1:
+            if args.get('repository_tags'):
                 # pull provided tags
                 for tag in args.get('repository_tags'):
                     repo = args.get('repositories')[0] + ':' + tag
