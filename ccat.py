@@ -40,6 +40,12 @@ SWAP_GCP_CREDS = 'Swap GCP Credentials'
 # Docker words
 DOCKER_BACKDOOR = 'Docker Backdoor'
 
+# Kubernetes words
+ENUMERATE_K8S_SUBJECTS_ROLES_ROLEBINDINGS = '    Enumerate K8s Subjects, (Cluster)Roles, and (Cluster)RoleBindings'
+DOWNLOAD_K8S_SECRETS = '    Download K8s Secrets'
+DOWNLOAD_K8S_CONFIGMAP = '    Download K8s ConfigMap'
+SCAN_K8S_RBAC_PRIVESC = '    Scan K8s RBAC Privilege Escalation'
+
 
 custom_style = style_from_dict({
     Token.Separator: '#6C6C6C',
@@ -58,11 +64,13 @@ class CLI(object):
         aws = AWS()
         gcp = GCP()
         docker = Docker()
+        k8s = Kubernetes()
 
         self.extentions = {
             'aws': aws,
             'gcp': gcp,
-            'docker': docker
+            'docker': docker,
+            'k8s': k8s
         }
 
     def print_title(self, text='Cloud Container Attack Tool', font='slant'):
@@ -161,6 +169,19 @@ class CLI(object):
             self.print_module_running(docker__backdoor.module_info['name'])
             data = docker__backdoor.main(cli_answers)
             self.print_module_summary(data, docker__backdoor)
+
+        # Kubernetes
+        elif ENUMERATE_K8S_SUBJECTS_ROLES_ROLEBINDINGS in answers['main_menu']:
+            cli_answers = self.extentions['k8s'].ask_enum_k8s_subjects_roles_rolebindings()
+
+        elif DOWNLOAD_K8S_SECRETS in answers['main_menu']:
+            cli_answers = self.extentions['k8s'].ask_download_k8s_secrets()
+
+        elif DOWNLOAD_K8S_CONFIGMAP in answers['main_menu']:
+            cli_answers = self.extentions['k8s'].ask_download_k8s_configmap()
+
+        elif SCAN_K8S_RBAC_PRIVESC in answers['main_menu']:
+            cli_answers = self.extentions['k8s'].ask_scan_k8s_rbac_privesc()
 
         else:
             self.exit_cli()
@@ -705,6 +726,40 @@ class Docker(object):
         })        
 
         return answers
+
+
+class Kubernetes(object):
+    def __init__(self):
+        None
+    
+    def get_menu(self):
+        return [
+            Separator('= Kubernetes (K8s) ='),
+            Separator('  [Category: ENUM]'),
+            ENUMERATE_K8S_SUBJECTS_ROLES_ROLEBINDINGS,
+            DOWNLOAD_K8S_SECRETS,
+            DOWNLOAD_K8S_CONFIGMAP,
+            Separator('  [Category: ESCLATE]'),
+            SCAN_K8S_RBAC_PRIVESC
+        ]
+
+    # Category ENUM    
+    def ask_enum_k8s_subjects_roles_rolebindings(self):
+        print('ask_enum_k8s_subjects_roles_rolebindings')
+        return 'ask_enum_k8s_subjects_roles_rolebindings'
+
+    def ask_download_k8s_secrets(self):
+        print('ask_download_k8s_secrets')
+        return 'ask_download_k8s_secrets'
+
+    def ask_download_k8s_configmap(self):
+        print('ask_download_k8s_configmap')
+        return 'ask_download_k8s_configmap'
+
+    # Category PRIVESC
+    def ask_scan_k8s_rbac_privesc(self):
+        print('ask_scan_k8s_rbac_privesc')
+        return 'ask_scan_k8s_rbac_privesc'
 
 
 def main():
