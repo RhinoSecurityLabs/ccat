@@ -126,5 +126,5 @@ dmypy.json
 # Custom
 /data
 /test
-./vscode
-./ccat_env
+/.vscode
+/ccat_env
