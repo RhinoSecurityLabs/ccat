@@ -44,8 +44,18 @@ DOCKER_BACKDOOR = 'Docker Backdoor'
 ENUMERATE_K8S_SUBJECTS_ROLES_ROLEBINDINGS = '    Enumerate K8s Subjects, (Cluster)Roles, and (Cluster)RoleBindings'
 DOWNLOAD_K8S_SECRETS = '    Download K8s Secrets'
 DOWNLOAD_K8S_CONFIGMAP = '    Download K8s ConfigMap'
+ENUMERATE_K8S_PODS = '    Enumerate K8s Pods'
 SCAN_K8S_RBAC_PRIVESC = '    Scan K8s RBAC Privilege Escalation'
-
+EXPLOIT_K8S_KUBELET_BOOTSTRAPPING = '    Exploit K8s Kubelet Bootstrapping'
+BACKDOOR_K8S_STATIC_POD = '    Backdoor K8s with Static Pod'
+BACKDOOR_K8S_SERVICEACCOUNT = '    Backdoor K8s with Service Account'
+DOWNLOAD_K8S_RUNNING_CONTAINER_ENVS = '    Download K8s Running Container Environment Variables'
+DOWNLOAD_K8S_RUNNING_CONTAINER_SERVICEACCOUNT_TOKEN = '    Download K8s Running Container Service Account Token'
+DOWNLOAD_K8S_RUNNING_CONTAINER_EKS_METADATA = '    Download K8s Running Container EKS Metadata'
+DOWNLOAD_K8S_RUNNING_CONTAINER_GKE_METADATA = '    Download K8s Running Container GKE Metadata'
+SCAN_K8S_CVE = '    Scan K8s CVEs'
+SCAN_K8S_CVE_EKS = '    Scan K8s CVEs for EKS'
+SCAN_K8S_CVE_GKE = '    Scan K8s CVEs for GKE'
 
 custom_style = style_from_dict({
     Token.Separator: '#6C6C6C',
@@ -739,8 +749,23 @@ class Kubernetes(object):
             ENUMERATE_K8S_SUBJECTS_ROLES_ROLEBINDINGS,
             DOWNLOAD_K8S_SECRETS,
             DOWNLOAD_K8S_CONFIGMAP,
+            ENUMERATE_K8S_PODS,
             Separator('  [Category: ESCLATE]'),
-            SCAN_K8S_RBAC_PRIVESC
+            SCAN_K8S_RBAC_PRIVESC,
+            Separator('  [Category: EXPLOIT]'),
+            EXPLOIT_K8S_KUBELET_BOOTSTRAPPING,
+            Separator('  [Category: PERSIST]'),
+            BACKDOOR_K8S_STATIC_POD,
+            BACKDOOR_K8S_SERVICEACCOUNT,
+            Separator('  [Category: EXFIL]'),
+            DOWNLOAD_K8S_RUNNING_CONTAINER_ENVS,
+            DOWNLOAD_K8S_RUNNING_CONTAINER_SERVICEACCOUNT_TOKEN,
+            DOWNLOAD_K8S_RUNNING_CONTAINER_GKE_METADATA,
+            DOWNLOAD_K8S_RUNNING_CONTAINER_EKS_METADATA,
+            Separator('  [Category: CVE]'),
+            SCAN_K8S_CVE,
+            SCAN_K8S_CVE_EKS,
+            SCAN_K8S_CVE_GKE,
         ]
 
     # Category ENUM    
