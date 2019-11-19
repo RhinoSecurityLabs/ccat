@@ -16,7 +16,8 @@ DEPENDENCIES = [
     'PyInquirer',
     'pyfiglet',
     'fire',
-    'tabulate'
+    'tabulate',
+    'kubernetes'
 ]
 
 TEST_DEPENDENCIES = []

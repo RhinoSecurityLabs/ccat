@@ -4,3 +4,4 @@ PyInquirer
 pyfiglet
 fire
 tabulate
+kubernetes
