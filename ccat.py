@@ -27,6 +27,7 @@ import modules.docker__backdoor.main as docker__backdoor
 import modules.k8s__enum_subjects_roles_rolebindings.main as k8s__enum_subjects_roles_rolebindings
 import modules.k8s__enum_secrets.main as k8s__enum_secrets
 import modules.k8s__enum_config_map.main as k8s__enum_config_map
+import modules.k8s__enum_pods.main as k8s__enum_pods
 
 # AWS words
 ENUMERATE_ECR = 'Enumerate ECR'
@@ -203,6 +204,12 @@ class CLI(object):
             self.print_module_running(k8s__enum_config_map.module_info['name'])
             data = k8s__enum_config_map.main(cli_answers)
             self.print_module_summary(data, k8s__enum_config_map)
+
+        elif ENUMERATE_K8S_PODS in answers['main_menu']:
+            cli_answers = self.extentions['k8s'].ask_enum_k8s_pods()
+            self.print_module_running(k8s__enum_pods.module_info['name'])
+            data = k8s__enum_pods.main(cli_answers)
+            self.print_module_summary(data, k8s__enum_pods)
 
         elif SCAN_K8S_RBAC_PRIVESC in answers['main_menu']:
             cli_answers = self.extentions['k8s'].ask_scan_k8s_rbac_privesc()
@@ -794,6 +801,10 @@ class Kubernetes(object):
     def ask_download_k8s_configmap(self):
         print('ask_download_k8s_configmap')
         return 'ask_download_k8s_configmap'
+
+    def ask_enum_k8s_pods(self):
+        print('ask_enum_k8s_pods')
+        return 'ask_enum_k8s_pods'
 
     # Category PRIVESC
     def ask_scan_k8s_rbac_privesc(self):
