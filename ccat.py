@@ -23,6 +23,9 @@ import modules.gcr__push_repos.main as gcr__push_repos
 # Docker
 import modules.docker__backdoor.main as docker__backdoor
 
+# Kubernetes
+import modules.k8s__enum_subjects_roles_rolebindings.main as k8s__enum_subjects_roles_rolebindings
+
 # AWS words
 ENUMERATE_ECR = 'Enumerate ECR'
 PULL_ECR_REPOS = 'Pull Repos from ECR'
@@ -183,6 +186,9 @@ class CLI(object):
         # Kubernetes
         elif ENUMERATE_K8S_SUBJECTS_ROLES_ROLEBINDINGS in answers['main_menu']:
             cli_answers = self.extentions['k8s'].ask_enum_k8s_subjects_roles_rolebindings()
+            self.print_module_running(k8s__enum_subjects_roles_rolebindings.module_info['name'])
+            data = k8s__enum_subjects_roles_rolebindings.main(cli_answers)
+            self.print_module_summary(data, k8s__enum_subjects_roles_rolebindings)
 
         elif DOWNLOAD_K8S_SECRETS in answers['main_menu']:
             cli_answers = self.extentions['k8s'].ask_download_k8s_secrets()
