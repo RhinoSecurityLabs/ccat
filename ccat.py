@@ -25,6 +25,7 @@ import modules.docker__backdoor.main as docker__backdoor
 
 # Kubernetes
 import modules.k8s__enum_subjects_roles_rolebindings.main as k8s__enum_subjects_roles_rolebindings
+import modules.k8s__enum_secrets.main as k8s__enum_secrets
 
 # AWS words
 ENUMERATE_ECR = 'Enumerate ECR'
@@ -192,6 +193,9 @@ class CLI(object):
 
         elif DOWNLOAD_K8S_SECRETS in answers['main_menu']:
             cli_answers = self.extentions['k8s'].ask_download_k8s_secrets()
+            self.print_module_running(k8s__enum_secrets.module_info['name'])
+            data = k8s__enum_secrets.main(cli_answers)
+            self.print_module_summary(data, k8s__enum_secrets)
 
         elif DOWNLOAD_K8S_CONFIGMAP in answers['main_menu']:
             cli_answers = self.extentions['k8s'].ask_download_k8s_configmap()
