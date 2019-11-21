@@ -28,8 +28,28 @@ def enum_service_accounts(coreV1Api, data):
         serviceAccounts = coreV1Api.list_service_account_for_all_namespaces(watch=False)
     except ApiException as e:
         print("Exception when calling CoreV1Api->list_service_account_for_all_namespaces: %s\n" % e)
+    
+    items = []
+    for item in serviceAccounts.items:
+        secrets = []
+        for secret in item.secrets:
+            cleanedSecret = {
+                'name': secret.name
+            }
+            secrets.append(cleanedSecret)
 
-    data['payload']['service_accounts']['items'] = serviceAccounts.items
+        cleanedItem = {
+            'metadata': {
+                'name': item.metadata.name,
+                'namespace': item.metadata.namespace
+            },
+            'secrets': secrets,
+            'automount_service_account_token': item.automount_service_account_token,
+            'image_pull_secrets': item.image_pull_secrets
+        }
+        items.append(cleanedItem)
+
+    data['payload']['service_accounts']['items'] = items
     data['payload']['service_accounts']['count'] = len(serviceAccounts.items)
 
 
@@ -39,7 +59,35 @@ def enum_roles(rbacAuthorizationV1Api, data):
     except ApiException as e:
         print("Exception when calling RbacAuthorizationV1Api->list_role_for_all_namespaces: %s\n" % e)
 
-    data['payload']['roles']['items'] = roles.items
+    items = []
+    for item in roles.items:
+        rules = []
+        for rule in item.rules:
+            apiGroups = [*rule.api_groups] if rule.api_groups else []
+            resources = [*rule.resources] if rule.resources else []
+            verbs = [*rule.verbs] if rule.verbs else []
+
+            cleanedRule = {
+                'api_groups': apiGroups,
+                'resources': resources,
+                'verbs': verbs
+            }
+            rules.append(cleanedRule)
+        
+        cleanedLabels = {}
+        cleanedLabels.update(item.metadata.labels)
+
+        cleanedItem = {
+            'metadata': {
+                'name': item.metadata.name,
+                'namespace': item.metadata.namespace,
+                'labels': cleanedLabels
+            },
+            'rules': rules
+        }
+        items.append(cleanedItem)
+
+    data['payload']['roles']['items'] = items
     data['payload']['roles']['count'] = len(roles.items)
 
 
@@ -49,7 +97,30 @@ def enum_cluter_roles(rbacAuthorizationV1Api, data):
     except ApiException as e:
         print("Exception when calling rbacAuthorizationV1Api->list_cluster_role: %s\n" % e)
 
-    data['payload']['cluster_roles']['items'] = clusterRoles.items
+    items = []
+    for item in clusterRoles.items:
+        rules = []
+        for rule in item.rules:
+            apiGroups = [*rule.api_groups] if rule.api_groups else []
+            resources = [*rule.resources] if rule.resources else []
+            verbs = [*rule.verbs] if rule.verbs else []
+
+            cleanedRule = {
+                'api_groups': apiGroups,
+                'resources': resources,
+                'verbs': verbs
+            }
+            rules.append(cleanedRule)
+
+        cleanedItem = {
+            'metadata': {
+                'name': item.metadata.name
+            },
+            'rules': rules
+        }
+        items.append(cleanedItem)
+
+    data['payload']['cluster_roles']['items'] = items
     data['payload']['cluster_roles']['count'] = len(clusterRoles.items)
 
 
@@ -58,8 +129,40 @@ def enum_role_bindings(rbacAuthorizationV1Api, data):
         roleBindings = rbacAuthorizationV1Api.list_role_binding_for_all_namespaces(watch=False)
     except ApiException as e:
         print("Exception when calling rbacAuthorizationV1Api->list_role_binding_for_all_namespaces: %s\n" % e)
+    
+    items = []
+    for item in roleBindings.items:
 
-    data['payload']['role_bindings']['items'] = roleBindings.items
+        cleanedLabels = {}
+        cleanedLabels.update(item.metadata.labels)
+
+        cleanedRoleRef = {
+            'apiGroup': item.role_ref.api_group,
+            'kind': item.role_ref.kind,
+            'name': item.role_ref.name
+        }
+
+        subjects = []
+        for subject in item.subjects:
+            cleanedSubject = {
+                'kind': subject.kind,
+                'name': subject.name,
+                'namespace': subject.namespace
+            }
+            subjects.append(cleanedSubject)
+
+        cleanedItem = {
+            'metadata': {
+                'name': item.metadata.name,
+                'namespace': item.metadata.namespace,
+                'labels': cleanedLabels
+            },
+            'roleRef': cleanedRoleRef,
+            'subjects': subjects
+        }
+        items.append(cleanedItem)
+
+    data['payload']['role_bindings']['items'] = items
     data['payload']['role_bindings']['count'] = len(roleBindings.items)
 
 
@@ -69,7 +172,40 @@ def enum_cluster_role_bindings(rbacAuthorizationV1Api, data):
     except ApiException as e:
         print("Exception when calling rbacAuthorizationV1Api->list_cluster_role_binding: %s\n" % e)
 
-    data['payload']['cluster_role_bindings']['items'] = clusterRoleBindings.items
+    items = []
+    for item in clusterRoleBindings.items:
+        cleanedLabels = {}
+        cleanedLabels.update(item.metadata.labels)
+
+        cleanedRoleRef = {
+            'apiGroup': item.role_ref.api_group,
+            'kind': item.role_ref.kind,
+            'name': item.role_ref.name
+        }
+
+        subjects = []
+        if item.subjects:
+            for subject in item.subjects:
+                cleanedSubject = {
+                    'kind': subject.kind,
+                    'name': subject.name,
+                    'namespace': subject.namespace
+                }
+                subjects.append(cleanedSubject)
+
+        cleanedItem = {
+            'metadata': {
+                'name': item.metadata.name,
+                'namespace': item.metadata.namespace,
+                'labels': cleanedLabels
+            },
+            'roleRef': cleanedRoleRef,
+            'subjects': subjects
+        }
+        items.append(cleanedItem)
+
+
+    data['payload']['cluster_role_bindings']['items'] = items
     data['payload']['cluster_role_bindings']['count'] = len(clusterRoleBindings.items)
 
 
