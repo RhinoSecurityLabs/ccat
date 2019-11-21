@@ -37,20 +37,28 @@ def enum_secrets(coreV1Api, data):
     except ApiException as e:
         print("Exception when calling CoreV1Api->list_secret_for_all_namespaces: %s\n" % e)
 
-    data['payload']['secrets']['items'] = secrets.items
+    items = []
+    for item in secrets.items:
+
+        secretDataBase64Decoded = {}
+        secretDataBase64Encoded = item.data
+        for secretName in secretDataBase64Encoded:
+            secretValueBase64Decoded= decodeBase64Secret(secretDataBase64Encoded[secretName])
+            secretDataBase64Decoded[secretName] = secretValueBase64Decoded
+        
+        cleanedItem = {
+            'metadata': {
+                'name': item.metadata.name,
+                'namespace': item.metadata.namespace
+            },
+            'data': secretDataBase64Decoded,
+            'type': item.type
+        }
+
+        items.append(cleanedItem)
+
+    data['payload']['secrets']['items'] = items
     data['payload']['secrets']['count'] = len(secrets.items)
-
-    # print(secrets.items[0])
-
-    encodedSecretsData = secrets.items[0].data
-    decodedSecretsData = {}
-    for secret in encodedSecretsData:
-        base64DecodedValue = decodeBase64Secret(encodedSecretsData[secret])
-        base64DecodedKey = secret + "-base64Decoded"
-        decodedSecretsData[base64DecodedKey] = base64DecodedValue
-    
-    # merge decode secrets with encoded secrets
-    encodedSecretsData.update(decodedSecretsData)
 
 
 def save_to_file(save_to_file_directory ,save_to_file_path ,data):
